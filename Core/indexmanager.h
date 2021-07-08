@@ -1,12 +1,12 @@
 #ifndef INDEXMANAGER_H
 #define INDEXMANAGER_H
 
+#include "indexthread.h"
+
 #include <QObject>
 #include <QObject>
 #include <QMutex>
 #include <QList>
-
-#include "diskindexthread.h"
 
 class IndexManager : QObject
 {
@@ -23,8 +23,8 @@ public:
 private:
     static IndexManager *mInstance;
     static QMutex  mMutex;
+    IndexThread* mIndexThread;
 
-    QList<DiskIndexThread> diskThreadList;
 };
 
 #endif // INDEXMANAGER_H

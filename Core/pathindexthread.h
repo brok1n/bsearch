@@ -3,12 +3,25 @@
 
 #include <QThread>
 #include <QObject>
+#include <QFileInfo>
+
+#include "datacenter.h"
 
 class PathIndexThread : public QThread
 {
     Q_OBJECT
 public:
-    PathIndexThread();
+    PathIndexThread(QFileInfo info, Node *);
+    ~PathIndexThread();
+    void run();
+
+    void stop();
+    void eachDir(QFileInfo);
+
+private:
+    QFileInfo mInfo;
+    bool mRunning;
+    Node *mRootNode;
 };
 
 #endif // PATHINDEXTHREAD_H

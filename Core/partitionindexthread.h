@@ -10,11 +10,16 @@ class PartitionIndexThread : public QThread
 {
     Q_OBJECT
 public:
-    PartitionIndexThread();
+    PartitionIndexThread(QString rootPath);
 
+    void run();
+
+    void stop();
 
 private:
-    QList<PathIndexThread> pathThreadList();
+    QList<PathIndexThread*> mPathThreadList;
+    QString mRootPath;
+    bool mRunning;
 };
 
 #endif // PARTITIONINDEXTHREAD_H
