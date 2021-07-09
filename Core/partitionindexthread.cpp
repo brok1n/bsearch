@@ -34,15 +34,16 @@ void PartitionIndexThread::run()
             QFileInfo fileInfo = fileList.at(i);
             Node *node = new Node();
             node->name = fileInfo.fileName();
-            rootNode->childs.append(node);
+            rootNode->addChild(node);
+//            rootNode->childs.append(node);
             if(fileInfo.isDir())
             {
 //                if(!fileInfo.filePath().contains("Windows"))
 //                {
 //                    continue;
 //                }
-                qDebug() << "pathIndex:" << fileInfo.filePath();
-                PathIndexThread *pathThread = new PathIndexThread(fileInfo, node);
+//                qDebug() << "pathIndex:" << fileInfo.filePath();
+                PathIndexThread *pathThread = new PathIndexThread(fileInfo, node, 0);
                 mPathThreadList.append(pathThread);
                 pathThread->start();
 //                break;

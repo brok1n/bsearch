@@ -11,17 +11,18 @@ class PathIndexThread : public QThread
 {
     Q_OBJECT
 public:
-    PathIndexThread(QFileInfo info, Node *);
+    PathIndexThread(QFileInfo info, Node *, int);
     ~PathIndexThread();
     void run();
 
     void stop();
-    void eachDir(QFileInfo);
+    void eachDir(QFileInfo, Node *);
 
 private:
     QFileInfo mInfo;
     bool mRunning;
     Node *mRootNode;
+    int mLevel;
 };
 
 #endif // PATHINDEXTHREAD_H

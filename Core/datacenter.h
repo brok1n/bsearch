@@ -10,6 +10,11 @@ struct Node {
     QString name;
     QList<Node*> childs;
     Node *parent;
+    void addChild(Node* node)
+    {
+        childs.append(node);
+        node->parent = this;
+    }
 };
 
 class DataCenter : public QObject

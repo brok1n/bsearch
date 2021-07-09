@@ -37,16 +37,25 @@ void IndexThread::run()
         mPartitionThreadList.append(pit);
         pit->start();
 
-        pit->wait();
+//        pit->wait();
 
-        qDebug() << "磁盘处理完毕:" << diskInfo.rootPath();
+//        qDebug() << "磁盘处理完毕:" << diskInfo.rootPath();
 
 //        delete pit;
 
-        qDebug() << "file count:" << DataCenter::GetInstance()->fileList()->size();
+//        qDebug() << "file count:" << DataCenter::GetInstance()->fileList()->size();
 
-        break;
+//        break;
     }
+
+    for(int i = 0; i < mPartitionThreadList.size(); i ++)
+    {
+        PartitionIndexThread *thread = mPartitionThreadList.at(i);
+        thread->wait();
+    }
+
+    qDebug() << "所有磁盘扫描完毕!";
+
 }
 
 void IndexThread::stop()

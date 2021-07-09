@@ -4,10 +4,11 @@
 #include <QDir>
 #include <QDebug>
 
-PathIndexThread::PathIndexThread(QFileInfo info, Node *node)
+PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level)
     : mInfo(info)
     , mRunning(false)
     , mRootNode(node)
+    , mLevel(level)
 {
 
 }
@@ -21,7 +22,8 @@ void PathIndexThread::run()
 {
     qDebug() << "开始遍历：" << mInfo.filePath();
     mRunning = true;
-    eachDir(mInfo);
+    eachDir(mInfo, mRootNode);
+    qDebug() << "PathIndexThread finished:" << mInfo.filePath();
 //    qDebug() << "delete:" << mInfo.filePath();
     //    delete this;
 }
@@ -31,13 +33,13 @@ void PathIndexThread::stop()
     mRunning = false;
 }
 
-void PathIndexThread::eachDir(QFileInfo info)
+void PathIndexThread::eachDir(QFileInfo info, Node *parent)
 {
     if(!mRunning)
     {
         return;
     }
-    qDebug() << "PathIndexThread each:" << info.filePath();
+//    qDebug() << "PathIndexThread each:" << info.filePath();
     QDir dir(info.filePath());
     dir.setFilter(QDir::Files|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
     dir.setSorting(QDir::Name);
@@ -52,15 +54,26 @@ void PathIndexThread::eachDir(QFileInfo info)
         QFileInfo f = fileList.at(i);
         Node *node = new Node();
         node->name = f.fileName();
-        mRootNode->childs.append(node);
+//        parent->childs.append(node);
+        parent->addChild(node);
         if(f.isDir())
         {
-            qDebug() << "dir:" << f.filePath();
-            eachDir(f);
+//            qDebug() << "dir:" << f.filePath();
+//            eachDir(f, node);
+            if(mLevel < 5)
+            {
+                PathIndexThread *pathThread = new PathIndexThread(f, node, mLevel+1);
+    //            mPathThreadList.append(pathThread);
+                pathThread->start();
+            }
+            else
+            {
+                eachDir(f, node);
+            }
         }
         else
         {
-            qDebug() << "file:" << f.filePath();
+//            qDebug() << "file:" << f.filePath();
 //            DataCenter::GetInstance()->filePathList()->append(f.filePath());
 //            DataCenter::GetInstance()->fileList()->append(f);
         }
