@@ -6,11 +6,13 @@ QMutex  DataCenter::mMutex;
 
 DataCenter::DataCenter(QObject *parent)
     : QObject(parent)
-    , mFileList(new QList<QFileInfo>())
-    , mFilePathList(new QList<QString>())
+//    , mFileList(new QList<QFileInfo>())
+//    , mFilePathList(new QList<QString>())
     , mTree(new QMap<QString, Node*>())
 {
-
+    mPool = new QThreadPool();
+    mPool->setMaxThreadCount(200);
+    mPool->setExpiryTimeout(-1);
 }
 
 DataCenter::~DataCenter()
@@ -18,19 +20,24 @@ DataCenter::~DataCenter()
     qDebug("DataCenter delete");
 }
 
-QList<QFileInfo> *DataCenter::fileList()
-{
-    return mFileList;
-}
+//QList<QFileInfo> *DataCenter::fileList()
+//{
+//    return mFileList;
+//}
 
-QList<QString> *DataCenter::filePathList()
-{
-    return mFilePathList;
-}
+//QList<QString> *DataCenter::filePathList()
+//{
+//    return mFilePathList;
+//}
 
 QMap<QString, Node *> *DataCenter::fileTree()
 {
     return mTree;
+}
+
+QThreadPool *DataCenter::threadPool()
+{
+    return mPool;
 }
 
 DataCenter *DataCenter::GetInstance()
@@ -49,4 +56,20 @@ DataCenter *DataCenter::GetInstance()
 void DataCenter::Release()
 {
     delete mInstance;
+}
+
+void DataCenter::printNode(Node *node, int level)
+{
+    QString tmpName = "";
+    for(int i = 0; i < level * 5; i ++)
+    {
+        tmpName.append(' ');
+    }
+    tmpName.append(node->name);
+    qDebug() <<  tmpName.toStdString().data();
+    for(int i = 0; i < node->childs.size(); i ++)
+    {
+        Node *n = node->childs.at(i);
+        printNode(n, level+1);
+    }
 }

@@ -1,5 +1,6 @@
 #include "core.h"
-#include<QDebug>
+#include <QDebug>
+#include <QThreadPool>
 #include "datacenter.h"
 #include "indexmanager.h"
 
@@ -64,7 +65,18 @@ bool Core::saveData()
 
 bool Core::start()
 {
+    QThreadPool::globalInstance()->setMaxThreadCount(200);
     IndexManager::GetInstance()->start();
+//    QElapsedTimer timer;
+//    Node *node = new Node();
+//    QFileInfo info("E:\\workspace");
+//    node->name = info.fileName();
+//    PathIndexThread *pathIndexThread = new PathIndexThread(info, node, 0);
+//    pathIndexThread->start();
+//    pathIndexThread->wait();
+//    qint64 useTime = timer.elapsed();
+//    pathIndexThread->printNode(node, 1);
+//    qDebug() << "use time:" << useTime;
 }
 
 bool Core::stop()

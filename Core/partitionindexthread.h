@@ -16,6 +16,8 @@ public:
 
     void stop();
 
+    bool isWinSystemPartition(QString);
+
 private:
     QList<PathIndexThread*> mPathThreadList;
     QString mRootPath;

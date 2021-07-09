@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QFileInfo>
 #include <QList>
+#include <QThreadPool>
 
 struct Node {
     QString name;
@@ -28,19 +29,23 @@ public:
     static void Release();
     ~DataCenter();
 
-    QList<QFileInfo>* fileList();
-    QList<QString>* filePathList();
+//    QList<QFileInfo>* fileList();
+//    QList<QString>* filePathList();
     QMap<QString, Node*>* fileTree();
+    QThreadPool* threadPool();
+
+    void printNode(Node*, int);
 
 signals:
 
 private:
     static DataCenter *mInstance;
     static QMutex  mMutex;
-    QList<QFileInfo> *mFileList;
-    QList<QString> *mFilePathList;
+//    QList<QFileInfo> *mFileList;
+//    QList<QString> *mFilePathList;
 
     QMap<QString, Node*> *mTree;
+    QThreadPool *mPool;
 
 };
 

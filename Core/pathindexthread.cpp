@@ -3,6 +3,8 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QTextStream>
+#include <QThreadPool>
 
 PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level)
     : mInfo(info)
@@ -15,18 +17,43 @@ PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level)
 
 PathIndexThread::~PathIndexThread()
 {
-    qDebug() << "删除";
+//    qDebug() << "PathIndexThread 删除" << mInfo.filePath();
 }
 
 void PathIndexThread::run()
 {
-    qDebug() << "开始遍历：" << mInfo.filePath();
+
+//    qDebug() << "开始遍历：" << mInfo.filePath();
     mRunning = true;
     eachDir(mInfo, mRootNode);
-    qDebug() << "PathIndexThread finished:" << mInfo.filePath();
+//    for(int i = 0; i < mPathIndexThreadList.size(); i ++)
+//    {
+//        PathIndexThread *thread = mPathIndexThreadList.at(i);
+//        thread->wait();
+//    }
+//    qDebug() << "PathIndexThread finished:" << mInfo.filePath();
+//    printNode(mRootNode, 1);
 //    qDebug() << "delete:" << mInfo.filePath();
-    //    delete this;
+//    delete this;
 }
+
+
+void PathIndexThread::printNode(Node *node, int level)
+{
+    QString tmpName = "";
+    for(int i = 0; i < level * 5; i ++)
+    {
+        tmpName.append(' ');
+    }
+    tmpName.append(node->name);
+    qDebug() <<  tmpName.toStdString().data();
+    for(int i = 0; i < node->childs.size(); i ++)
+    {
+        Node *n = node->childs.at(i);
+        printNode(n, level+1);
+    }
+}
+
 
 void PathIndexThread::stop()
 {
@@ -41,8 +68,8 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
     }
 //    qDebug() << "PathIndexThread each:" << info.filePath();
     QDir dir(info.filePath());
-    dir.setFilter(QDir::Files|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
-    dir.setSorting(QDir::Name);
+    dir.setFilter(QDir::Readable|QDir::Hidden|QDir::Files|QDir::NoSymLinks|QDir::Dirs|QDir::NoDotAndDotDot);
+    dir.setSorting(QDir::DirsFirst);
     QFileInfoList fileList = dir.entryInfoList();
     for(int i = 0; i < fileList.size(); i ++)
     {
@@ -58,13 +85,20 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
         parent->addChild(node);
         if(f.isDir())
         {
+            QString tmpName = node->name.toLower();
+            if(tmpName.startsWith(".") || tmpName.startsWith("_") || tmpName.startsWith("temp") || tmpName.startsWith("cache") || tmpName == "appdata")
+            {
+                continue;
+            }
 //            qDebug() << "dir:" << f.filePath();
 //            eachDir(f, node);
             if(mLevel < 5)
             {
                 PathIndexThread *pathThread = new PathIndexThread(f, node, mLevel+1);
-    //            mPathThreadList.append(pathThread);
-                pathThread->start();
+                mPathIndexThreadList.append(pathThread);
+//                pathThread->start();
+                DataCenter::GetInstance()->threadPool()->start(pathThread);
+//                QThreadPool::globalInstance()->start(pathThread);
             }
             else
             {

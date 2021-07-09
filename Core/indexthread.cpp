@@ -3,6 +3,7 @@
 
 #include <QStorageInfo>
 #include <QDebug>
+#include <QThreadPool>
 
 IndexThread::IndexThread()
 {
@@ -36,17 +37,9 @@ void IndexThread::run()
         PartitionIndexThread *pit = new PartitionIndexThread(diskInfo.rootPath());
         mPartitionThreadList.append(pit);
         pit->start();
-
-//        pit->wait();
-
-//        qDebug() << "磁盘处理完毕:" << diskInfo.rootPath();
-
-//        delete pit;
-
-//        qDebug() << "file count:" << DataCenter::GetInstance()->fileList()->size();
-
-//        break;
     }
+
+    DataCenter::GetInstance()->threadPool()->waitForDone();
 
     for(int i = 0; i < mPartitionThreadList.size(); i ++)
     {
