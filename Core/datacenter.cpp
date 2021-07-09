@@ -9,6 +9,7 @@ DataCenter::DataCenter(QObject *parent)
 //    , mFileList(new QList<QFileInfo>())
 //    , mFilePathList(new QList<QString>())
     , mTree(new QMap<QString, Node*>())
+    , mResultList(new QList<Node*>())
 {
     mPool = new QThreadPool();
     mPool->setMaxThreadCount(200);
@@ -38,6 +39,11 @@ QMap<QString, Node *> *DataCenter::fileTree()
 QThreadPool *DataCenter::threadPool()
 {
     return mPool;
+}
+
+QList<Node*>* DataCenter::resultList()
+{
+    return mResultList;
 }
 
 DataCenter *DataCenter::GetInstance()

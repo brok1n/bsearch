@@ -11,61 +11,19 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>BSearch</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>A</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit"/>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>B</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit_2"/>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>TextLabel</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </item>
-   </layout>
+   <widget class="QLineEdit" name="keyEdit">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>800</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -76,8 +34,57 @@
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>打开</string>
+    </property>
+    <addaction name="actionguanbi"/>
+    <addaction name="actionnihao"/>
+    <addaction name="actionnihao_2"/>
+   </widget>
+   <widget class="QMenu" name="menuasdfasdf">
+    <property name="title">
+     <string>asdfasdf</string>
+    </property>
+    <addaction name="actionasdfasdf"/>
+    <addaction name="actiondel"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menuasdfasdf"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionguanbi">
+   <property name="text">
+    <string>guanbi</string>
+   </property>
+  </action>
+  <action name="actionnihao">
+   <property name="text">
+    <string>nihao</string>
+   </property>
+  </action>
+  <action name="actionnihao_2">
+   <property name="text">
+    <string>nihao</string>
+   </property>
+  </action>
+  <action name="actionasdfasdf">
+   <property name="text">
+    <string>asdfasdf</string>
+   </property>
+  </action>
+  <action name="actiondel">
+   <property name="text">
+    <string>del</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

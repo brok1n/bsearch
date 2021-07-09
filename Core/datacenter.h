@@ -33,6 +33,8 @@ public:
 //    QList<QString>* filePathList();
     QMap<QString, Node*>* fileTree();
     QThreadPool* threadPool();
+    QList<Node*>* resultList();
+
 
     void printNode(Node*, int);
 
@@ -46,6 +48,7 @@ private:
 
     QMap<QString, Node*> *mTree;
     QThreadPool *mPool;
+    QList<Node*> *mResultList;
 
 };
 

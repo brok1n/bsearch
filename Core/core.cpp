@@ -19,6 +19,10 @@ Core::Core(QObject *parent) : QObject(parent)
 
 Core::~Core()
 {
+    for(int i = 0; i < mSearchThreadList.size(); i ++)
+    {
+        delete mSearchThreadList.at(i);
+    }
     qDebug("Core delete");
 }
 
@@ -46,6 +50,18 @@ int Core::add(int a, int b)
 {
     qDebug("add ");
     return a + b;
+}
+
+void Core::search(QString key)
+{
+    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();
+    for(int i = 0; i < keys.size(); i ++)
+    {
+        Node *node = DataCenter::GetInstance()->fileTree()->value(keys.at(i));
+        SearchThread *searchThread = new SearchThread(node, key);
+        mSearchThreadList.append(searchThread);
+        searchThread->start();
+    }
 }
 
 bool Core::init()

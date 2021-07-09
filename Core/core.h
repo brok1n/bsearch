@@ -2,6 +2,8 @@
 #define CORE_H
 
 //#include "Core_global.h"
+#include "searchthread.h"
+
 #include <QObject>
 #include <QMutex>
 
@@ -19,6 +21,7 @@ public:
 
 public:
     int add(int a, int b);
+    void search(QString);
 
     bool init();
     bool loadData();
@@ -30,6 +33,8 @@ public:
 private:
     static Core *mInstance;
     static QMutex  mMutex;
+
+    QList<SearchThread*> mSearchThreadList;
 };
 
 #endif // CORE_H

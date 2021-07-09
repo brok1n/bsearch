@@ -16,7 +16,11 @@ public:
     ~MainWindow();
 
 public slots:
-    void onBtnClicked(bool checked);
+
+private slots:
+    void on_keyEdit_textChanged(const QString &arg1);
+
+    void on_keyEdit_returnPressed();
 
 private:
     Ui::MainWindow *ui;
