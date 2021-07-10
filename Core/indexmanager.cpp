@@ -40,12 +40,11 @@ IndexManager::~IndexManager()
 
 bool IndexManager::start()
 {
-    QElapsedTimer timer;
-    timer.start();
+
     mIndexThread = new IndexThread();
     mIndexThread->start();
-    mIndexThread->wait();
-    qDebug() << "耗时:" << timer.elapsed();
+//    mIndexThread->wait();
+
 
 //    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();
 //    for(int i = 0; i < keys.size(); i ++)

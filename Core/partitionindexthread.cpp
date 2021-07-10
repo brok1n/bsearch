@@ -32,7 +32,7 @@ void PartitionIndexThread::run()
 
     //单独处理windows系统分区
     if(isWinSystemPartition(mRootPath)) {
-        qDebug() << "is Windows Partition";
+        qDebug() << "该分区为Windows系统分区";
         QString homePath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
         //windows的系统盘只需要扫描几个特定目录即可
         qDebug() << "用户目录:" << homePath;
@@ -55,7 +55,7 @@ void PartitionIndexThread::run()
         Node *home3DNode = new Node();
         home3DNode->name = home3DInfo.fileName();
         lastNode->addChild(home3DNode);
-        PathIndexThread *pathThread = new PathIndexThread(home3DInfo, home3DNode, 2);
+        PathIndexThread *pathThread = new PathIndexThread(home3DInfo, home3DNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
@@ -65,7 +65,7 @@ void PartitionIndexThread::run()
         Node *homeVideosNode = new Node();
         homeVideosNode->name = homeVideosInfo.fileName();
         lastNode->addChild(homeVideosNode);
-        pathThread = new PathIndexThread(homeVideosInfo, homeVideosNode, 2);
+        pathThread = new PathIndexThread(homeVideosInfo, homeVideosNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
@@ -76,17 +76,17 @@ void PartitionIndexThread::run()
         Node *homePicturesNode = new Node();
         homePicturesNode->name = homePicturesInfo.fileName();
         lastNode->addChild(homePicturesNode);
-        pathThread = new PathIndexThread(homePicturesInfo, homePicturesNode, 2);
+        pathThread = new PathIndexThread(homePicturesInfo, homePicturesNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
         //Documents目录
         QString homeDocumentsPath = QString(homePath).append('/').append("Documents");
-        QFileInfo homeDocumentsInfo(homePicturesPath);
+        QFileInfo homeDocumentsInfo(homeDocumentsPath);
         Node *homeDocumentsNode = new Node();
         homeDocumentsNode->name = homeDocumentsInfo.fileName();
         lastNode->addChild(homeDocumentsNode);
-        pathThread = new PathIndexThread(homeDocumentsInfo, homeDocumentsNode, 2);
+        pathThread = new PathIndexThread(homeDocumentsInfo, homeDocumentsNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
@@ -96,7 +96,7 @@ void PartitionIndexThread::run()
         Node *homeDownloadsNode = new Node();
         homeDownloadsNode->name = homeDownloadsInfo.fileName();
         lastNode->addChild(homeDownloadsNode);
-        pathThread = new PathIndexThread(homeDownloadsInfo, homeDownloadsNode, 2);
+        pathThread = new PathIndexThread(homeDownloadsInfo, homeDownloadsNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
@@ -106,7 +106,7 @@ void PartitionIndexThread::run()
         Node *homeMusicNode = new Node();
         homeMusicNode->name = homeMusicInfo.fileName();
         lastNode->addChild(homeMusicNode);
-        pathThread = new PathIndexThread(homeMusicInfo, homeMusicNode, 2);
+        pathThread = new PathIndexThread(homeMusicInfo, homeMusicNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
@@ -116,11 +116,13 @@ void PartitionIndexThread::run()
         Node *homeDesktopNode = new Node();
         homeDesktopNode->name = homeDesktopInfo.fileName();
         lastNode->addChild(homeDesktopNode);
-        pathThread = new PathIndexThread(homeDesktopInfo, homeDesktopNode, 2);
+        pathThread = new PathIndexThread(homeDesktopInfo, homeDesktopNode, 1);
         mPathThreadList.append(pathThread);
         DataCenter::GetInstance()->threadPool()->start(pathThread);
 
         DataCenter::GetInstance()->printNode(rootNode, 0);
+
+        DataCenter::GetInstance()->threadPool()->waitForDone();
 
         return;
     }
@@ -156,13 +158,14 @@ void PartitionIndexThread::run()
         }
     }
 
+    DataCenter::GetInstance()->threadPool()->waitForDone();
 
 //    for(int i = 0; i < mPathThreadList.size(); i ++)
 //    {
 //        PathIndexThread *thread = mPathThreadList.at(i);
-//        thread->
-////        qDebug() << "path index thread exit.";
-////        delete thread;
+
+//        qDebug() << "path index thread exit.";
+//        delete thread;
 //    }
 
 

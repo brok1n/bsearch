@@ -39,7 +39,7 @@ void SearchThread::eachNode(Node *node, int level)
         if(n->name.contains(mKey))
         {
             qDebug() << n->name;
-            DataCenter::GetInstance()->resultList()->append(n);
+//            DataCenter::GetInstance()->resultList()->append(n);
         }
         if(!mRunning)
         {
