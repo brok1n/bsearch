@@ -31,12 +31,12 @@ DataCenter::~DataCenter()
 //    return mFilePathList;
 //}
 
-QMap<QString, Node *> *DataCenter::fileTree()
+QMap<QString, Node *>* DataCenter::fileTree()
 {
     return mTree;
 }
 
-QThreadPool *DataCenter::threadPool()
+QThreadPool* DataCenter::threadPool()
 {
     return mPool;
 }
@@ -46,7 +46,7 @@ QList<Node*>* DataCenter::resultList()
     return mResultList;
 }
 
-DataCenter *DataCenter::GetInstance()
+DataCenter* DataCenter::GetInstance()
 {
     if (mInstance == nullptr)
     {

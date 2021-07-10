@@ -16,9 +16,6 @@ MainWindow::~MainWindow()
     Core::Release();
 }
 
-
-
-
 void MainWindow::on_keyEdit_textChanged(const QString &arg1)
 {
     qDebug() << "keyEdit:" << arg1;
