@@ -52,7 +52,7 @@ void MainWindow::flushResult()
     QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
     for(int i = 0; i < resultList->size(); i ++)
     {
-        QListWidgetItem *item=new QListWidgetItem;
+        QListWidgetItem *item=new QListWidgetItem(ui->listWidget);
 
         item->setText(resultList->at(i)->fullPath());   //设置列表项的文本
 
