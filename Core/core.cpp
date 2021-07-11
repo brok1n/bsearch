@@ -3,11 +3,14 @@
 #include <QThreadPool>
 #include "datacenter.h"
 #include "indexmanager.h"
+#include "searchmanager.h"
 
 Core* Core::mInstance = nullptr;
 QMutex  Core::mMutex;
 
-Core::Core(QObject *parent) : QObject(parent)
+Core::Core(QObject *parent)
+    : QObject(parent)
+    , mSearchManager(nullptr)
 {
     qDebug("Core 创建");
 
@@ -54,14 +57,25 @@ int Core::add(int a, int b)
 
 void Core::search(QString key)
 {
-    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();
-    for(int i = 0; i < keys.size(); i ++)
+    DataCenter::GetInstance()->setSearchFinished(false);
+    if(mSearchManager != nullptr)
     {
-        Node *node = DataCenter::GetInstance()->fileTree()->value(keys.at(i));
-        SearchThread *searchThread = new SearchThread(node, key);
-        mSearchThreadList.append(searchThread);
-        searchThread->start();
+        mSearchManager->stop();
+        mSearchManager->wait();
+        delete mSearchManager;
     }
+
+    mSearchManager = new SearchManager(key);
+    mSearchManager->start();
+
+//    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();
+//    for(int i = 0; i < keys.size(); i ++)
+//    {
+//        Node *node = DataCenter::GetInstance()->fileTree()->value(keys.at(i));
+//        SearchThread *searchThread = new SearchThread(node, key);
+//        mSearchThreadList.append(searchThread);
+//        searchThread->start();
+//    }
 }
 
 bool Core::init()

@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QObject>
 #include "datacenter.h"
+#include <functional>
 
 class SearchThread : public QThread
 {
@@ -14,7 +15,7 @@ public:
 
     void run();
 
-    void eachNode(Node*, int);
+    void eachNode(Node*, QList<Node*>*, int);
 
     void stop();
 

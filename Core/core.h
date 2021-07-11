@@ -4,8 +4,12 @@
 //#include "Core_global.h"
 #include "searchthread.h"
 
+#include "datacenter.h"
+
 #include <QObject>
 #include <QMutex>
+#include <functional>
+#include "searchmanager.h"
 
 //class CORE_EXPORT Core
 class Core : public QObject
@@ -35,6 +39,7 @@ private:
     static QMutex  mMutex;
 
     QList<SearchThread*> mSearchThreadList;
+    SearchManager *mSearchManager;
 };
 
 #endif // CORE_H

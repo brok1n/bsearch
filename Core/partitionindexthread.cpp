@@ -10,12 +10,21 @@ PartitionIndexThread::PartitionIndexThread(QString rootPath)
     : mRootPath(rootPath)
     , mRunning(false)
 {
+    mThreadPool = new QThreadPool;
+    mThreadPool->setMaxThreadCount(DataCenter::GetInstance()->singleThreadCount());
+    mThreadPool->setExpiryTimeout(-1);
+}
+
+PartitionIndexThread::~PartitionIndexThread()
+{
 
 }
 
 void PartitionIndexThread::run()
 {
 //    qDebug("PartitionIndexThread run:");
+    QElapsedTimer partitionTimer;
+    partitionTimer.start();
     mRunning = true;
     QDir dir(mRootPath);
     if(!dir.isReadable())
@@ -45,6 +54,7 @@ void PartitionIndexThread::run()
         {
             Node *node = new Node();
             node->name = homePathList.at(i);
+            node->isDir = true;
             lastNode->addChild(node);
             lastNode = node;
         }
@@ -54,75 +64,82 @@ void PartitionIndexThread::run()
         QFileInfo home3DInfo(home3DPath);
         Node *home3DNode = new Node();
         home3DNode->name = home3DInfo.fileName();
+        home3DNode->isDir = true;
         lastNode->addChild(home3DNode);
-        PathIndexThread *pathThread = new PathIndexThread(home3DInfo, home3DNode, 1);
+        PathIndexThread *pathThread = new PathIndexThread(home3DInfo, home3DNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
         //Videos目录
         QString homeVideosPath = QString(homePath).append('/').append("Videos");
         QFileInfo homeVideosInfo(homeVideosPath);
         Node *homeVideosNode = new Node();
+        homeVideosNode->isDir = true;
         homeVideosNode->name = homeVideosInfo.fileName();
         lastNode->addChild(homeVideosNode);
-        pathThread = new PathIndexThread(homeVideosInfo, homeVideosNode, 1);
+        pathThread = new PathIndexThread(homeVideosInfo, homeVideosNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
 
         //Pictures目录
         QString homePicturesPath = QString(homePath).append('/').append("Pictures");
         QFileInfo homePicturesInfo(homePicturesPath);
         Node *homePicturesNode = new Node();
+        homePicturesNode->isDir = true;
         homePicturesNode->name = homePicturesInfo.fileName();
         lastNode->addChild(homePicturesNode);
-        pathThread = new PathIndexThread(homePicturesInfo, homePicturesNode, 1);
+        pathThread = new PathIndexThread(homePicturesInfo, homePicturesNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
         //Documents目录
         QString homeDocumentsPath = QString(homePath).append('/').append("Documents");
         QFileInfo homeDocumentsInfo(homeDocumentsPath);
         Node *homeDocumentsNode = new Node();
+        homeDocumentsNode->isDir = true;
         homeDocumentsNode->name = homeDocumentsInfo.fileName();
         lastNode->addChild(homeDocumentsNode);
-        pathThread = new PathIndexThread(homeDocumentsInfo, homeDocumentsNode, 1);
+        pathThread = new PathIndexThread(homeDocumentsInfo, homeDocumentsNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
         //Downloads目录
         QString homeDownloadsPath = QString(homePath).append('/').append("Downloads");
         QFileInfo homeDownloadsInfo(homeDownloadsPath);
         Node *homeDownloadsNode = new Node();
+        homeDownloadsNode->isDir = true;
         homeDownloadsNode->name = homeDownloadsInfo.fileName();
         lastNode->addChild(homeDownloadsNode);
-        pathThread = new PathIndexThread(homeDownloadsInfo, homeDownloadsNode, 1);
+        pathThread = new PathIndexThread(homeDownloadsInfo, homeDownloadsNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
         //Music目录
         QString homeMusicPath = QString(homePath).append('/').append("Music");
         QFileInfo homeMusicInfo(homeMusicPath);
         Node *homeMusicNode = new Node();
+        homeMusicNode->isDir = true;
         homeMusicNode->name = homeMusicInfo.fileName();
         lastNode->addChild(homeMusicNode);
-        pathThread = new PathIndexThread(homeMusicInfo, homeMusicNode, 1);
+        pathThread = new PathIndexThread(homeMusicInfo, homeMusicNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
         //Desktop目录
         QString homeDesktopPath = QString(homePath).append('/').append("Desktop");
         QFileInfo homeDesktopInfo(homeDesktopPath);
         Node *homeDesktopNode = new Node();
+        homeDesktopNode->isDir = true;
         homeDesktopNode->name = homeDesktopInfo.fileName();
         lastNode->addChild(homeDesktopNode);
-        pathThread = new PathIndexThread(homeDesktopInfo, homeDesktopNode, 1);
+        pathThread = new PathIndexThread(homeDesktopInfo, homeDesktopNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
-        DataCenter::GetInstance()->threadPool()->start(pathThread);
+        mThreadPool->start(pathThread);
 
         DataCenter::GetInstance()->printNode(rootNode, 0);
 
-        DataCenter::GetInstance()->threadPool()->waitForDone();
+        mThreadPool->waitForDone();
 
         return;
     }
@@ -140,14 +157,15 @@ void PartitionIndexThread::run()
         rootNode->addChild(node);
         if(fileInfo.isDir())
         {
+            node->isDir = true;
             if(node->name.startsWith("$") || node->name.startsWith("."))
             {
                 continue;
             }
 //          qDebug() << "pathIndex:" << fileInfo.filePath();
-            PathIndexThread *pathThread = new PathIndexThread(fileInfo, node, 0);
+            PathIndexThread *pathThread = new PathIndexThread(fileInfo, node, 0, mThreadPool);
             mPathThreadList.append(pathThread);
-            DataCenter::GetInstance()->threadPool()->start(pathThread);
+            mThreadPool->start(pathThread);
 //                pathThread->start();
 //                QThreadPool::globalInstance()->start(pathThread);
 //                break;
@@ -158,23 +176,11 @@ void PartitionIndexThread::run()
         }
     }
 
-    DataCenter::GetInstance()->threadPool()->waitForDone();
+    mThreadPool->waitForDone();
+    qint64 useTime = partitionTimer.elapsed();
+    qDebug() << "分区处理完毕:" << mRootPath << " 耗时：" << (useTime / 1000) << "秒" << (useTime % 1000) << "毫秒";
 
-//    for(int i = 0; i < mPathThreadList.size(); i ++)
-//    {
-//        PathIndexThread *thread = mPathThreadList.at(i);
-
-//        qDebug() << "path index thread exit.";
-//        delete thread;
-//    }
-
-
-//    if( DataCenter::GetInstance()->fileTree()->contains(mRootPath) )
-//    {
-//        Node *node = DataCenter::GetInstance()->fileTree()->value(mRootPath);
-//        DataCenter::GetInstance()->printNode(node, 1);
-//    }
-//    qDebug() << "分区处理完毕:" << mRootPath;
+    DataCenter::GetInstance()->setScanFinishedCount(DataCenter::GetInstance()->scanFinishedCount() + 1);
 
 }
 

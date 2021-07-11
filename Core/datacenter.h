@@ -6,17 +6,37 @@
 #include <QFileInfo>
 #include <QList>
 #include <QThreadPool>
+#include <QDir>
+#include <QMap>
 
 struct Node {
-    QString name;
+    QString name = "";
     QList<Node*> childs;
-    Node *parent;
+    bool isDir = false;
+    Node *parent = nullptr;
     void addChild(Node* node)
     {
         childs.append(node);
         node->parent = this;
     }
+    QString fullPath()
+    {
+        return eachParent(this).replace("//", "/");
+    }
+    QString eachParent(Node *p)
+    {
+        if(p->parent == nullptr)
+        {
+            return p->name;
+        }
+        else
+        {
+            return eachParent(p->parent) + "/" + p->name;
+        }
+    }
 };
+
+const int MAX_THREAD_COUNT = 100;
 
 class DataCenter : public QObject
 {
@@ -32,9 +52,20 @@ public:
 //    QList<QFileInfo>* fileList();
 //    QList<QString>* filePathList();
     QMap<QString, Node*>* fileTree();
-    QThreadPool* threadPool();
+//    QThreadPool* threadPool();
     QList<Node*>* resultList();
 
+    bool isSearchFinished();
+    void setSearchFinished(bool);
+
+    int partitionCount();
+    void setPartitionCount(int);
+
+    int scanFinishedCount();
+    void setScanFinishedCount(int);
+
+    int singleThreadCount();
+    void setSingleThreadCount(int);
 
     void printNode(Node*, int);
 
@@ -49,7 +80,10 @@ private:
     QMap<QString, Node*> *mTree;
     QThreadPool *mPool;
     QList<Node*> *mResultList;
-
+    bool mSearchFinished;
+    int mPartitionCount;
+    int mScanFinishedCount;
+    int mSingleThreadCount;
 };
 
 #endif // DATACENTER_H

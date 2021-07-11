@@ -13,7 +13,7 @@ class PathIndexThread : public QRunnable
 {
 //    Q_OBJECT
 public:
-    PathIndexThread(QFileInfo info, Node *, int);
+    PathIndexThread(QFileInfo info, Node *, int, QThreadPool*);
     ~PathIndexThread();
     void run();
 
@@ -28,6 +28,7 @@ private:
     Node *mRootNode;
     int mLevel;
     QList<PathIndexThread*> mPathIndexThreadList;
+    QThreadPool *mThreadPool;
 
 };
 

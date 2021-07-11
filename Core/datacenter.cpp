@@ -10,9 +10,12 @@ DataCenter::DataCenter(QObject *parent)
 //    , mFilePathList(new QList<QString>())
     , mTree(new QMap<QString, Node*>())
     , mResultList(new QList<Node*>())
+    , mSearchFinished(false)
+    , mPartitionCount(0)
+    , mScanFinishedCount(0)
 {
     mPool = new QThreadPool();
-    mPool->setMaxThreadCount(200);
+    mPool->setMaxThreadCount(10);
     mPool->setExpiryTimeout(-1);
 }
 
@@ -36,14 +39,56 @@ QMap<QString, Node *>* DataCenter::fileTree()
     return mTree;
 }
 
-QThreadPool* DataCenter::threadPool()
-{
-    return mPool;
-}
+//QThreadPool* DataCenter::threadPool()
+//{
+//    return mPool;
+//}
 
 QList<Node*>* DataCenter::resultList()
 {
     return mResultList;
+}
+
+bool DataCenter::isSearchFinished()
+{
+    return mSearchFinished;
+}
+
+void DataCenter::setSearchFinished(bool status)
+{
+    mSearchFinished = status;
+}
+
+int DataCenter::partitionCount()
+{
+    return mPartitionCount;
+}
+
+void DataCenter::setPartitionCount(int count)
+{
+    mPartitionCount = count;
+    mSingleThreadCount = MAX_THREAD_COUNT / count;
+}
+
+int DataCenter::scanFinishedCount()
+{
+    return mScanFinishedCount;
+}
+
+void DataCenter::setScanFinishedCount(int count)
+{
+    mScanFinishedCount = count;
+    mSingleThreadCount = MAX_THREAD_COUNT / (mPartitionCount - count);
+}
+
+int DataCenter::singleThreadCount()
+{
+    return mSingleThreadCount;
+}
+
+void DataCenter::setSingleThreadCount(int count)
+{
+    mSingleThreadCount = count;
 }
 
 DataCenter* DataCenter::GetInstance()

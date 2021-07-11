@@ -3,7 +3,7 @@
 
 #include <QThread>
 #include <QObject>
-
+#include <QThreadPool>
 #include "pathindexthread.h"
 
 class PartitionIndexThread : public QThread
@@ -11,6 +11,7 @@ class PartitionIndexThread : public QThread
     Q_OBJECT
 public:
     PartitionIndexThread(QString rootPath);
+    ~PartitionIndexThread();
 
     void run();
 
@@ -22,6 +23,7 @@ private:
     QList<PathIndexThread*> mPathThreadList;
     QString mRootPath;
     bool mRunning;
+    QThreadPool *mThreadPool;
 };
 
 #endif // PARTITIONINDEXTHREAD_H

@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/indexthread.cpp \
     $$PWD/partitionindexthread.cpp \
     $$PWD/pathindexthread.cpp \
+    $$PWD/searchmanager.cpp \
     $$PWD/searchthread.cpp
 
 HEADERS += \
@@ -17,6 +18,7 @@ HEADERS += \
     $$PWD/indexthread.h \
     $$PWD/partitionindexthread.h \
     $$PWD/pathindexthread.h \
+    $$PWD/searchmanager.h \
     $$PWD/searchthread.h
 
 TRANSLATIONS += \

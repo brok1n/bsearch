@@ -27,6 +27,7 @@ void IndexThread::run()
     QList<QStorageInfo> list = QStorageInfo::mountedVolumes();
     int count = list.size();
     QString strInfo = "";
+    DataCenter::GetInstance()->setPartitionCount(list.size());
     for(int i = 0; i < count; ++i)
     {
 //        QElapsedTimer partitionTimer;
@@ -37,6 +38,7 @@ void IndexThread::run()
 //        qDebug(diskInfo.displayName().toLatin1());
         qDebug() << "开始处理磁盘：" << diskInfo.name() << " " << diskInfo.rootPath();
         Node *node = new Node();
+        node->isDir = true;
         node->name = diskInfo.rootPath();
         DataCenter::GetInstance()->fileTree()->insert(diskInfo.rootPath(), node);
         PartitionIndexThread *pit = new PartitionIndexThread(diskInfo.rootPath());
@@ -56,11 +58,11 @@ void IndexThread::run()
         thread->wait();
     }
 
-    DataCenter::GetInstance()->threadPool()->waitForDone();
+//    DataCenter::GetInstance()->threadPool()->waitForDone();
 
     qDebug() << "所有磁盘扫描完毕!";
-
-    qDebug() << "耗时:" << timer.elapsed();
+    qint64 useTime = timer.elapsed();
+    qDebug() << "耗时:" << useTime << "  " << (useTime / 1000) << "秒" << (useTime % 1000) << "毫秒";
 
 }
 

@@ -6,11 +6,12 @@
 #include <QTextStream>
 #include <QThreadPool>
 
-PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level)
+PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level, QThreadPool *pool)
     : mInfo(info)
     , mRunning(false)
     , mRootNode(node)
     , mLevel(level)
+    , mThreadPool(pool)
 {
 
 }
@@ -85,19 +86,29 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
         parent->addChild(node);
         if(f.isDir())
         {
+            node->isDir = true;
             QString tmpName = node->name.toLower();
-            if(tmpName.startsWith(".") || tmpName.startsWith("_") || tmpName.startsWith("temp") || tmpName.startsWith("cache") || tmpName == "appdata")
+            if(tmpName.startsWith(".") || tmpName.startsWith("_") || tmpName.startsWith("node_modules"))
             {
                 continue;
             }
 //            qDebug() << "dir:" << f.filePath();
 //            eachDir(f, node);
-            if(mLevel < 5)
+            int level = 5;
+            if(DataCenter::GetInstance()->scanFinishedCount() >= DataCenter::GetInstance()->partitionCount() / 2)
             {
-                PathIndexThread *pathThread = new PathIndexThread(f, node, mLevel+1);
+                level = 7;
+            }
+            if(DataCenter::GetInstance()->singleThreadCount() != mThreadPool->maxThreadCount())
+            {
+                mThreadPool->setMaxThreadCount(DataCenter::GetInstance()->singleThreadCount());
+            }
+            if(mLevel < level)
+            {
+                PathIndexThread *pathThread = new PathIndexThread(f, node, mLevel+1, mThreadPool);
                 mPathIndexThreadList.append(pathThread);
 //                pathThread->start();
-                DataCenter::GetInstance()->threadPool()->start(pathThread);
+                mThreadPool->start(pathThread);
 //                QThreadPool::globalInstance()->start(pathThread);
             }
             else

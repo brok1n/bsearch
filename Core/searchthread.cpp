@@ -7,7 +7,6 @@ SearchThread::SearchThread(Node *node, QString key)
     , mKey(key)
     , mRunning(false)
 {
-
 }
 
 SearchThread::~SearchThread()
@@ -23,11 +22,12 @@ void SearchThread::run()
     }
     mRunning = true;
     qDebug() << "SearchThread " << mNode->name << " start.";
-    eachNode(mNode, 0);
+    QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
+    eachNode(mNode, resultList, 0);
     qDebug() << "SearchThread " << mNode->name << " end.";
 }
 
-void SearchThread::eachNode(Node *node, int level)
+void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
 {
     if(!mRunning)
     {
@@ -38,14 +38,16 @@ void SearchThread::eachNode(Node *node, int level)
         Node *n = node->childs.at(i);
         if(n->name.contains(mKey))
         {
-            qDebug() << n->name;
+//            qDebug() << n->fullPath();
+//            mResultCallback(n);
+            resultList->append(n);
 //            DataCenter::GetInstance()->resultList()->append(n);
         }
         if(!mRunning)
         {
             return;
         }
-        eachNode(n, level+1);
+        eachNode(n, resultList, level+1);
     }
 }
 
