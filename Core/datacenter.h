@@ -9,34 +9,7 @@
 #include <QDir>
 #include <QMap>
 
-struct Node {
-    QString name = "";
-    QList<Node*> childs;
-    bool isDir = false;
-    Node *parent = nullptr;
-    void addChild(Node* node)
-    {
-        childs.append(node);
-        node->parent = this;
-    }
-    QString fullPath()
-    {
-        return eachParent(this).replace("//", "/");
-    }
-    QString eachParent(Node *p)
-    {
-        if(p->parent == nullptr)
-        {
-            return p->name;
-        }
-        else
-        {
-            return eachParent(p->parent) + "/" + p->name;
-        }
-    }
-};
-
-const int MAX_THREAD_COUNT = 100;
+#include "common.h"
 
 class DataCenter : public QObject
 {
@@ -57,6 +30,9 @@ public:
 
     bool isSearchFinished();
     void setSearchFinished(bool);
+
+    bool isScanDiskFinished();
+    void setScanDiskFinished(bool);
 
     int partitionCount();
     void setPartitionCount(int);
@@ -84,6 +60,7 @@ private:
     int mPartitionCount;
     int mScanFinishedCount;
     int mSingleThreadCount;
+    bool mScanDiskFinished;
 };
 
 #endif // DATACENTER_H

@@ -10,7 +10,7 @@ class SearchThread : public QThread
 {
     Q_OBJECT
 public:
-    SearchThread(Node*, QString);
+    SearchThread(Node*, QString, int fileType = FILE_TYPE::FILE_ALL);
     ~SearchThread();
 
     void run();
@@ -23,6 +23,7 @@ private:
     Node *mNode;
     QString mKey;
     bool mRunning;
+    int mFileType;
 };
 
 #endif // SEARCHTHREAD_H

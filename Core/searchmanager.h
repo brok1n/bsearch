@@ -1,16 +1,16 @@
 #ifndef SEARCHMANAGER_H
 #define SEARCHMANAGER_H
 
-#include "searchthread.h"
-
 #include <QThread>
 #include <QObject>
+#include "common.h"
+#include "searchthread.h"
 
 class SearchManager : public QThread
 {
     Q_OBJECT
 public:
-    SearchManager(QString);
+    SearchManager(QString, int fileType = FILE_TYPE::FILE_ALL);
     ~SearchManager();
 
     void run();
@@ -18,6 +18,7 @@ public:
 
 private:
     QString mKey;
+    int mFileType;
     QList<SearchThread*> mThreadList;
 };
 

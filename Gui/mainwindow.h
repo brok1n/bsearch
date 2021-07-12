@@ -21,19 +21,24 @@ public:
 public slots:
 
 private slots:
-    void on_keyEdit_textChanged(const QString &arg1);
-
     void on_keyEdit_returnPressed();
 
     void onSearchFinished();
+
+    void onScanDiskFinished();
+
+    void on_filterCBox_currentIndexChanged(int index);
 
 public:
 
     void flushResult();
 
+    void startSearch();
+
 private:
     Ui::MainWindow *ui;
     QTimer *mWaitResultTimer;
+    QTimer *mWaitScanDiskTimer;
 
 };
 #endif // MAINWINDOW_H

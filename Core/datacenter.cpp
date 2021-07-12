@@ -13,6 +13,7 @@ DataCenter::DataCenter(QObject *parent)
     , mSearchFinished(false)
     , mPartitionCount(0)
     , mScanFinishedCount(0)
+    , mScanDiskFinished(false)
 {
     mPool = new QThreadPool();
     mPool->setMaxThreadCount(10);
@@ -57,6 +58,16 @@ bool DataCenter::isSearchFinished()
 void DataCenter::setSearchFinished(bool status)
 {
     mSearchFinished = status;
+}
+
+bool DataCenter::isScanDiskFinished()
+{
+    return mScanDiskFinished;
+}
+
+void DataCenter::setScanDiskFinished(bool status)
+{
+    mScanDiskFinished = status;
 }
 
 int DataCenter::partitionCount()

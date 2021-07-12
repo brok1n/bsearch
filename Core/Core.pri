@@ -1,6 +1,7 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
+    $$PWD/common.cpp \
     $$PWD/core.cpp \
     $$PWD/datacenter.cpp \
     $$PWD/indexmanager.cpp \
@@ -12,6 +13,7 @@ SOURCES += \
 
 HEADERS += \
 #    $$PWD/Core_global.h \
+    $$PWD/common.h \
     $$PWD/core.h \
     $$PWD/datacenter.h \
     $$PWD/indexmanager.h \

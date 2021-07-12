@@ -21,7 +21,7 @@
        <widget class="QLineEdit" name="keyEdit"/>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="filterCBox">
         <item>
          <property name="text">
           <string>全部</string>

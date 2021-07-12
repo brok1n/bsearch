@@ -55,7 +55,7 @@ int Core::add(int a, int b)
     return a + b;
 }
 
-void Core::search(QString key)
+void Core::search(QString key, int fileType)
 {
     DataCenter::GetInstance()->setSearchFinished(false);
     if(mSearchManager != nullptr)
@@ -65,7 +65,7 @@ void Core::search(QString key)
         delete mSearchManager;
     }
 
-    mSearchManager = new SearchManager(key);
+    mSearchManager = new SearchManager(key, fileType);
     mSearchManager->start();
 
 //    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();

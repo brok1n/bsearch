@@ -23,6 +23,9 @@ void IndexThread::run()
     QElapsedTimer timer;
     timer.start();
 
+    //磁盘扫描状态
+    DataCenter::GetInstance()->setScanDiskFinished(false);
+
     mRunning = true;
     QList<QStorageInfo> list = QStorageInfo::mountedVolumes();
     int count = list.size();
@@ -63,7 +66,7 @@ void IndexThread::run()
     qDebug() << "所有磁盘扫描完毕!";
     qint64 useTime = timer.elapsed();
     qDebug() << "耗时:" << useTime << "  " << (useTime / 1000) << "秒" << (useTime % 1000) << "毫秒";
-
+    DataCenter::GetInstance()->setScanDiskFinished(true);
 }
 
 void IndexThread::stop()

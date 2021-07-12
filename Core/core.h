@@ -2,15 +2,15 @@
 #define CORE_H
 
 //#include "Core_global.h"
-#include "searchthread.h"
 
-#include "datacenter.h"
 
 #include <QObject>
 #include <QMutex>
 #include <functional>
-#include "searchmanager.h"
+#include "common.h"
 
+class SearchThread;
+class SearchManager;
 //class CORE_EXPORT Core
 class Core : public QObject
 {
@@ -25,7 +25,7 @@ public:
 
 public:
     int add(int a, int b);
-    void search(QString);
+    void search(QString, int fileType = FILE_TYPE::FILE_ALL);
 
     bool init();
     bool loadData();

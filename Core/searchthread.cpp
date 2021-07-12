@@ -1,11 +1,11 @@
-#include "datacenter.h"
 #include "searchthread.h"
 #include <QDebug>
 
-SearchThread::SearchThread(Node *node, QString key)
+SearchThread::SearchThread(Node *node, QString key, int fileType)
     : mNode(node)
     , mKey(key)
     , mRunning(false)
+    , mFileType(fileType)
 {
 }
 
@@ -38,9 +38,12 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
         Node *n = node->childs.at(i);
         if(n->name.contains(mKey))
         {
+            if(mFileType == n->fileType())
+            {
+                resultList->append(n);
+            }
 //            qDebug() << n->fullPath();
 //            mResultCallback(n);
-            resultList->append(n);
 //            DataCenter::GetInstance()->resultList()->append(n);
         }
         if(!mRunning)
