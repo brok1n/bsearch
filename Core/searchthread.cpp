@@ -21,10 +21,10 @@ void SearchThread::run()
         return;
     }
     mRunning = true;
-    qDebug() << "SearchThread " << mNode->name << " start.";
+    qDebug() << "SearchThread " << mNode->name << "  " << mKey << ":" << mFileType << " start.";
     QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
     eachNode(mNode, resultList, 0);
-    qDebug() << "SearchThread " << mNode->name << " end.";
+    qDebug() << "SearchThread " << mNode->name << "  " << mKey << ":" << mFileType << " end.";
 }
 
 void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
@@ -38,6 +38,7 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
         Node *n = node->childs.at(i);
         if(n->name.contains(mKey))
         {
+            qDebug() << n->name << " : " << n->fileExt() << " : " << n->fileType() << " : " << mFileType;
             if(mFileType == n->fileType())
             {
                 resultList->append(n);

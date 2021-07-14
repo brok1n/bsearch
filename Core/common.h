@@ -74,14 +74,23 @@ struct Node {
     //扩展名
     QString fileExt()
     {
+        //如果文件类型处理过，就不再处理文件扩展名。
+        if(_fileType >= 0)
+        {
+            return _ext;
+        }
+        //文件夹、或空文件、或没有扩展名，扩展名都为空
         if(isDir || name.isEmpty() || !name.contains("."))
         {
+            _ext = "";
             return "";
         }
+        //有扩展名，直接返回扩展名
         if(!_ext.isEmpty())
         {
             return _ext;
         }
+        //找扩展名
         QStringList sp = name.split(".");
         if(sp.size() > 1)
         {
@@ -100,7 +109,8 @@ struct Node {
         QString ext = fileExt();
         if(ext.isEmpty())
         {
-            return 0;
+            _fileType = 0;
+            return _fileType;
         }
 
         if(FILE_TYPE_MUSIC->contains(ext))
