@@ -39,7 +39,7 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
         if(n->name.contains(mKey))
         {
             qDebug() << n->name << " : " << n->fileExt() << " : " << n->fileType() << " : " << mFileType;
-            if(mFileType == n->fileType())
+            if(mFileType == FILE_TYPE::FILE_ALL || mFileType == n->fileType())
             {
                 resultList->append(n);
             }

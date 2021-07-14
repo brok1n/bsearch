@@ -80,10 +80,7 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
             return;
         }
         QFileInfo f = fileList.at(i);
-        Node *node = new Node();
-        node->name = f.fileName();
-//        parent->childs.append(node);
-        parent->addChild(node);
+        Node *node = Node::create(f.fileName(), parent);
         if(f.isDir())
         {
             node->isDir = true;

@@ -40,9 +40,7 @@ void IndexThread::run()
         qint64 totalSize = diskInfo.bytesTotal();
 //        qDebug(diskInfo.displayName().toLatin1());
         qDebug() << "开始处理磁盘：" << diskInfo.name() << " " << diskInfo.rootPath();
-        Node *node = new Node();
-        node->isDir = true;
-        node->name = diskInfo.rootPath();
+        Node *node = Node::create(diskInfo.rootPath(), nullptr, true);
         DataCenter::GetInstance()->fileTree()->insert(diskInfo.rootPath(), node);
         PartitionIndexThread *pit = new PartitionIndexThread(diskInfo.rootPath());
         mPartitionThreadList.append(pit);

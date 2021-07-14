@@ -10,11 +10,17 @@
 const int MAX_THREAD_COUNT = 100;
 
 //文件类型
-const QString FILE_TYPE_MUSIC[] = {".ape", ".amr", ".aix", ".flac", ".mp3", ".mpc", ".ncm", ".ogg", ".mka", ".wma", ".wav", ".wv", ".aac", ".ac3", ".aif", ".asf", ".mmf", ".musx", ".pcm", ".tta", ".voc", ".vox", ".m4a", ".m4r", ".mpa", ".ra", ".gsm", ".mid"};
-const QString FILE_TYPE_VIDEO[] = {".rm", ".rmvb", ".3gp", ".3g2", ".mpg", ".mpeg", ".mod", ".ts", ".dvr-ms", ".m2ts", ".mts", ".mov", ".qt", ".dv", ".dif", ".wmv", ".asf", ".vfw", ".avi", ".avs", ".amv", ".mkv", ".mp4", ".flv", ".fli", ".dat", ".vob", ".yuv", ".cpk", ".trp", ".ogm"};
-const QString FILE_TYPE_IMAGE[] = {".pfd", ".ptimage", ".ptpage", ".bmp", ".dib", ".rel", ".gif", ".ico", ".heic", ".cur", ".jbg", ".jfif", ".jp2", ".j2k", ".jpc", ".j2c", ".jpg", ".jpe", ".jpeg", ".mng", ".jng", ".png", ".pcx", ".pgx", ".pnm", ".pgm", ".ppm", ".psd", ".ras", ".nef", ".crw", ".cr2", ".mrw", ".raf", ".erf", ".3fr", ".dcr", ".raw", ".rw2", ".dng", ".pef", ".x3f", ".arw", ".sr2", ".mef", ".orf", ".ska", ".svg", ".dxf", ".tga", ".tif", ".tiff", ".wbm", ".wbmp", ".webp", ".wmf", ".emf"};
-const QString FILE_TYPE_DOCUMENT[] = {".doc", ".docx", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".pdf", ".txt", ".htm", ".html", ".xml", ".json", ""};
-const QString FILE_TYPE_COMPRESS[] = {".zip", ".rar", ".gz", ".tar", ".gzip", ".cab", ".uue", ".arj", ".bz2", ".lzh", ".jar", ".ace", ".7-zip", ".z", ".iso"};
+//const QString FILE_TYPE_MUSIC[] = {".ape", ".amr", ".aix", ".flac", ".mp3", ".mpc", ".ncm", ".ogg", ".mka", ".wma", ".wav", ".wv", ".aac", ".ac3", ".aif", ".asf", ".mmf", ".musx", ".pcm", ".tta", ".voc", ".vox", ".m4a", ".m4r", ".mpa", ".ra", ".gsm", ".mid"};
+//const QString FILE_TYPE_VIDEO[] = {".rm", ".rmvb", ".3gp", ".3g2", ".mpg", ".mpeg", ".mod", ".ts", ".dvr-ms", ".m2ts", ".mts", ".mov", ".qt", ".dv", ".dif", ".wmv", ".asf", ".vfw", ".avi", ".avs", ".amv", ".mkv", ".mp4", ".flv", ".fli", ".dat", ".vob", ".yuv", ".cpk", ".trp", ".ogm"};
+//const QString FILE_TYPE_IMAGE[] = {".pfd", ".ptimage", ".ptpage", ".bmp", ".dib", ".rel", ".gif", ".ico", ".heic", ".cur", ".jbg", ".jfif", ".jp2", ".j2k", ".jpc", ".j2c", ".jpg", ".jpe", ".jpeg", ".mng", ".jng", ".png", ".pcx", ".pgx", ".pnm", ".pgm", ".ppm", ".psd", ".ras", ".nef", ".crw", ".cr2", ".mrw", ".raf", ".erf", ".3fr", ".dcr", ".raw", ".rw2", ".dng", ".pef", ".x3f", ".arw", ".sr2", ".mef", ".orf", ".ska", ".svg", ".dxf", ".tga", ".tif", ".tiff", ".wbm", ".wbmp", ".webp", ".wmf", ".emf"};
+//const QString FILE_TYPE_DOCUMENT[] = {".doc", ".docx", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".pdf", ".txt", ".htm", ".html", ".xml", ".json"};
+//const QString FILE_TYPE_COMPRESS[] = {".zip", ".rar", ".gz", ".tar", ".gzip", ".cab", ".uue", ".arj", ".bz2", ".lzh", ".jar", ".ace", ".7-zip", ".z", ".iso"};
+
+const QList<QString> FILE_TYPE_MUSIC = QList<QString>() << ".ape" << ".amr" << ".aix" << ".flac" << ".mp3" << ".mpc" << ".ncm" << ".ogg" << ".mka" << ".wma" << ".wav" << ".wv" << ".aac" << ".ac3" << ".aif" << ".asf" << ".mmf" << ".musx" << ".pcm" << ".tta" << ".voc" << ".vox" << ".m4a" << ".m4r" << ".mpa" << ".ra" << ".gsm" << ".mid";
+const QList<QString> FILE_TYPE_VIDEO = QList<QString>() << ".rm" << ".rmvb" << ".3gp" << ".3g2" << ".mpg" << ".mpeg" << ".mod" << ".ts" << ".dvr-ms" << ".m2ts" << ".mts" << ".mov" << ".qt" << ".dv" << ".dif" << ".wmv" << ".asf" << ".vfw" << ".avi" << ".avs" << ".amv" << ".mkv" << ".mp4" << ".flv" << ".fli" << ".dat" << ".vob" << ".yuv" << ".cpk" << ".trp" << ".ogm";
+const QList<QString> FILE_TYPE_IMAGE = QList<QString>() << ".pfd" << ".ptimage" << ".ptpage" << ".bmp" << ".dib" << ".rel" << ".gif" << ".ico" << ".heic" << ".cur" << ".jbg" << ".jfif" << ".jp2" << ".j2k" << ".jpc" << ".j2c" << ".jpg" << ".jpe" << ".jpeg" << ".mng" << ".jng" << ".png" << ".pcx" << ".pgx" << ".pnm" << ".pgm" << ".ppm" << ".psd" << ".ras" << ".nef" << ".crw" << ".cr2" << ".mrw" << ".raf" << ".erf" << ".3fr" << ".dcr" << ".raw" << ".rw2" << ".dng" << ".pef" << ".x3f" << ".arw" << ".sr2" << ".mef" << ".orf" << ".ska" << ".svg" << ".dxf" << ".tga" << ".tif" << ".tiff" << ".wbm" << ".wbmp" << ".webp" << ".wmf" << ".emf";
+const QList<QString> FILE_TYPE_DOCUMENT = QList<QString>() << ".doc" << ".docx" << ".xls" << ".xlsx" << ".csv" << ".ppt" << ".pptx" << ".pdf" << ".txt" << ".htm" << ".html" << ".xml" << ".json";
+const QList<QString> FILE_TYPE_COMPRESS = QList<QString>() << ".zip" << ".rar" << ".gz" << ".tar" << ".gzip" << ".cab" << ".uue" << ".arj" << ".bz2" << ".lzh" << ".jar" << ".ace" << ".7-zip" << ".z" << ".iso";
 
 enum FILE_TYPE
 {
@@ -44,6 +50,32 @@ struct Node {
     bool isDir = false;
     Node *parent = nullptr;
     int _fileType = -1;
+
+//    static Node* create()
+//    {
+//        Node *node = new Node();
+//        node->name = "";
+//        node->_ext = "";
+//        node->isDir = false;
+//        node->parent = nullptr;
+//        node->_fileType = -1;
+//        return node;
+//    }
+
+    static Node* create(QString name="", Node *parent=nullptr, bool isdir=false, int file_type=-1, QString ext="")
+    {
+        Node *node = new Node();
+        node->name = name;
+        node->_ext = ext;
+        node->isDir =  isdir;
+        if(parent != nullptr)
+        {
+            parent->childs.append(node);
+        }
+        node->parent = parent;
+        node->_fileType = file_type;
+        return node;
+    }
 
     //添加子节点
     void addChild(Node* node)
@@ -94,7 +126,7 @@ struct Node {
         QStringList sp = name.split(".");
         if(sp.size() > 1)
         {
-            _ext = sp[sp.size()-1].toLower();
+            _ext = QString(".").append(sp[sp.size()-1].toLower());
         }
         return _ext;
     }
@@ -113,23 +145,29 @@ struct Node {
             return _fileType;
         }
 
-        if(FILE_TYPE_MUSIC->contains(ext))
+
+//        for(int i = 0; i < a.len; i ++)
+//        {
+
+//        }
+
+        if(FILE_TYPE_MUSIC.contains(ext))
         {
             _fileType = FILE_TYPE::FILE_MUSIC;
         }
-        else if(FILE_TYPE_VIDEO->contains(ext))
+        else if(FILE_TYPE_VIDEO.contains(ext))
         {
             _fileType = FILE_TYPE::FILE_VIDEO;
         }
-        else if(FILE_TYPE_IMAGE->contains(ext))
+        else if(FILE_TYPE_IMAGE.contains(ext))
         {
             _fileType = FILE_TYPE::FILE_IMAGE;
         }
-        else if(FILE_TYPE_DOCUMENT->contains(ext))
+        else if(FILE_TYPE_DOCUMENT.contains(ext))
         {
             _fileType = FILE_TYPE::FILE_DOCUMENT;
         }
-        else if(FILE_TYPE_COMPRESS->contains(ext))
+        else if(FILE_TYPE_COMPRESS.contains(ext))
         {
             _fileType = FILE_TYPE::FILE_COMPRESS;
         }
