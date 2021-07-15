@@ -24,7 +24,8 @@ public:
     ~Core();
 
 public:
-    int add(int a, int b);
+    bool addControlPanel(qint64 panelId);
+    void releaseControlPanel(qint64 panelId);
     void search(QString, int fileType = FILE_TYPE::FILE_ALL);
 
     bool init();
@@ -40,6 +41,7 @@ private:
 
     QList<SearchThread*> mSearchThreadList;
     SearchManager *mSearchManager;
+    QList<qint64> mPanelIdList;
 };
 
 #endif // CORE_H

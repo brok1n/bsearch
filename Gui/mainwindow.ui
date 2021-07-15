@@ -21,6 +21,13 @@
        <widget class="QLineEdit" name="keyEdit"/>
       </item>
       <item>
+       <widget class="QCheckBox" name="contentSearchCbox">
+        <property name="text">
+         <string>文本内容搜索</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="filterCBox">
         <item>
          <property name="text">
@@ -67,7 +74,11 @@
      </layout>
     </item>
     <item>
-     <widget class="QListWidget" name="listWidget"/>
+     <widget class="QListWidget" name="listWidget">
+      <property name="selectionMode">
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -85,11 +96,12 @@
      <string>文件</string>
     </property>
     <addaction name="actionCreateWindow"/>
+    <addaction name="actionClose"/>
+    <addaction name="separator"/>
     <addaction name="actionOpenResultFile"/>
     <addaction name="actionExportResult"/>
     <addaction name="separator"/>
     <addaction name="actionPrefreences"/>
-    <addaction name="actionClose"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -137,6 +149,7 @@
     <addaction name="actionCreateFilter"/>
     <addaction name="actionManagerFilter"/>
     <addaction name="separator"/>
+    <addaction name="actionTxtContentSearch"/>
     <addaction name="actionAll"/>
     <addaction name="actionMusic"/>
     <addaction name="actionVideo"/>
@@ -189,6 +202,9 @@
    </property>
   </action>
   <action name="actionPreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>预览</string>
    </property>
@@ -239,26 +255,44 @@
    </property>
   </action>
   <action name="actionStatusBar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>状态栏</string>
    </property>
   </action>
   <action name="actionSuperBigIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>超大图标</string>
    </property>
   </action>
   <action name="actionBigIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>大图标</string>
    </property>
   </action>
   <action name="actionMidIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>中等图标</string>
    </property>
   </action>
   <action name="actionDetail">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>详情</string>
    </property>
@@ -274,26 +308,41 @@
    </property>
   </action>
   <action name="actionFixTop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>窗口置顶</string>
    </property>
   </action>
   <action name="actionMatchCase">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>区分大小写</string>
    </property>
   </action>
   <action name="actionFullContentMatch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>全字匹配</string>
    </property>
   </action>
   <action name="actionMatchPath">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>匹配路径</string>
    </property>
   </action>
   <action name="actionUseRegex">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>使用正则表达式</string>
    </property>
@@ -309,41 +358,69 @@
    </property>
   </action>
   <action name="actionAll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>全部</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionMusic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>音乐</string>
    </property>
   </action>
   <action name="actionVideo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>视频</string>
    </property>
   </action>
   <action name="actionPicture">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>图片</string>
    </property>
   </action>
   <action name="actionDocument">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>文档</string>
    </property>
   </action>
   <action name="actionCompress">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>压缩包</string>
    </property>
   </action>
-  <action name="actionExecute">
-   <property name="text">
-    <string>可执行文件</string>
-   </property>
-  </action>
   <action name="actionExecutable">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>可执行文件</string>
    </property>
@@ -394,8 +471,19 @@
    </property>
   </action>
   <action name="actionDir">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>文件夹</string>
+   </property>
+  </action>
+  <action name="actionTxtContentSearch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>文本内容搜索</string>
    </property>
   </action>
  </widget>

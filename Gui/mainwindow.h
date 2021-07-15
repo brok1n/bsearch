@@ -29,6 +29,32 @@ private slots:
 
     void on_filterCBox_currentIndexChanged(int index);
 
+    void on_actionAll_toggled(bool arg1);
+
+    void on_actionMusic_toggled(bool arg1);
+
+    void on_actionVideo_toggled(bool arg1);
+
+    void on_actionPicture_toggled(bool arg1);
+
+    void on_actionDocument_toggled(bool arg1);
+
+    void on_actionCompress_toggled(bool arg1);
+
+    void on_actionExecutable_toggled(bool arg1);
+
+    void on_actionDir_toggled(bool arg1);
+
+    void on_actionTxtContentSearch_toggled(bool arg1);
+
+    void on_actionCreateWindow_triggered();
+
+    void on_actionClose_triggered();
+
+    void on_actionQuit_triggered();
+
+    void on_actionFixTop_toggled(bool arg1);
+
 public:
 
     void flushResult();
@@ -39,6 +65,7 @@ private:
     Ui::MainWindow *ui;
     QTimer *mWaitResultTimer;
     QTimer *mWaitScanDiskTimer;
+    qint64 mPanelId;
 
 };
 #endif // MAINWINDOW_H

@@ -29,6 +29,26 @@ Core::~Core()
     qDebug("Core delete");
 }
 
+bool Core::addControlPanel(qint64 panelId)
+{
+    if(mPanelIdList.contains(panelId))
+    {
+        return false;
+    }
+    mPanelIdList.append(panelId);
+    return true;
+}
+
+void Core::releaseControlPanel(qint64 panelId)
+{
+    mPanelIdList.removeOne(panelId);
+    if(mPanelIdList.isEmpty())
+    {
+        //控制面板为空，可以销毁了
+        Core::Release();
+    }
+}
+
 Core *Core::GetInstance()
 {
     if (mInstance == nullptr)
@@ -47,12 +67,6 @@ void Core::Release()
     DataCenter::Release();
     IndexManager::Release();
     delete mInstance;
-}
-
-int Core::add(int a, int b)
-{
-    qDebug("add ");
-    return a + b;
 }
 
 void Core::search(QString key, int fileType)
