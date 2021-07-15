@@ -11,14 +11,17 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    resultlistitem.cpp \
     threadpooltest.cpp
 
 HEADERS += \
     mainwindow.h \
+    resultlistitem.h \
     threadpooltest.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    resultlistitem.ui
 
 TRANSLATIONS += \
     Gui_zh_CN.ts
@@ -27,3 +30,8 @@ TRANSLATIONS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res.qrc
+
+RC_ICONS = bsearch.ico

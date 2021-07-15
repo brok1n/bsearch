@@ -58,10 +58,10 @@ void MainWindow::flushResult()
     for(int i = 0; i < resultList->size(); i ++)
     {
         QListWidgetItem *item=new QListWidgetItem(ui->listWidget);
-
-        item->setText(resultList->at(i)->fullPath());   //设置列表项的文本
-
-        ui->listWidget->addItem(item);  //加载列表项到列表框
+        //设置列表项的文本
+        item->setText(QString("%1 (%2)").arg(resultList->at(i)->fullPath()).arg(Common::formatFileSize(resultList->at(i)->fileSize())));
+        //加载列表项到列表框
+        ui->listWidget->addItem(item);
     }
     ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
 }

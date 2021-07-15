@@ -81,6 +81,7 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
         }
         QFileInfo f = fileList.at(i);
         Node *node = Node::create(f.fileName(), parent);
+        node->setFileSize(f.size());
         if(f.isDir())
         {
             node->isDir = true;
@@ -90,7 +91,6 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
                 continue;
             }
 //            qDebug() << "dir:" << f.filePath();
-//            eachDir(f, node);
             int level = 5;
             if(DataCenter::GetInstance()->scanFinishedCount() >= DataCenter::GetInstance()->partitionCount() / 2)
             {
@@ -104,21 +104,12 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
             {
                 PathIndexThread *pathThread = new PathIndexThread(f, node, mLevel+1, mThreadPool);
                 mPathIndexThreadList.append(pathThread);
-//                pathThread->start();
                 mThreadPool->start(pathThread);
-//                QThreadPool::globalInstance()->start(pathThread);
             }
             else
             {
                 eachDir(f, node);
             }
-        }
-        else
-        {
-            node->setFileSize(f.size());
-//            qDebug() << "file:" << f.filePath();
-//            DataCenter::GetInstance()->filePathList()->append(f.filePath());
-//            DataCenter::GetInstance()->fileList()->append(f);
         }
     }
 }

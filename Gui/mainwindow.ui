@@ -85,13 +85,12 @@
      <string>文件</string>
     </property>
     <addaction name="actionCreateWindow"/>
-    <addaction name="separator"/>
     <addaction name="actionOpenResultFile"/>
     <addaction name="actionExportResult"/>
     <addaction name="separator"/>
     <addaction name="actionPrefreences"/>
-    <addaction name="separator"/>
     <addaction name="actionClose"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -101,8 +100,10 @@
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
+    <addaction name="separator"/>
     <addaction name="actionCopyTo"/>
     <addaction name="actionMoveTo"/>
+    <addaction name="separator"/>
     <addaction name="actionSelectAll"/>
     <addaction name="actionReverseSelect"/>
    </widget>
@@ -150,7 +151,6 @@
      <string>帮助</string>
     </property>
     <addaction name="actionHelp"/>
-    <addaction name="separator"/>
     <addaction name="actionSearchRegular"/>
     <addaction name="actionRegex"/>
     <addaction name="separator"/>

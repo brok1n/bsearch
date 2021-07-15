@@ -129,6 +129,7 @@ void PartitionIndexThread::run()
         }
         QFileInfo fileInfo = fileList.at(i);
         Node *node = Node::create(fileInfo.fileName(), rootNode);
+        node->setFileSize(fileInfo.size());
         if(fileInfo.isDir())
         {
             node->isDir = true;
@@ -140,14 +141,6 @@ void PartitionIndexThread::run()
             PathIndexThread *pathThread = new PathIndexThread(fileInfo, node, 0, mThreadPool);
             mPathThreadList.append(pathThread);
             mThreadPool->start(pathThread);
-//                pathThread->start();
-//                QThreadPool::globalInstance()->start(pathThread);
-//                break;
-        }
-        else
-        {
-            node->setFileSize(fileInfo.size());
-//                DataCenter::GetInstance()->fileList()->append(fileInfo);
         }
     }
 

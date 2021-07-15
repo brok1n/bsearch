@@ -4,6 +4,11 @@
 #include <QList>
 #include <QStringList>
 
+//文件大小等级
+const qint64 FILE_SIZE_TB = 1024 * 1024 * 1024 * (qint64)1024;
+const qint64 FILE_SIZE_GB = 1024 * 1024 * 1024;
+const qint64 FILE_SIZE_MB = 1024 * 1024;
+const qint64 FILE_SIZE_KB = 1024;
 
 
 //线程池最大线程数
@@ -216,6 +221,9 @@ class Common
 {
 public:
     Common();
+
+
+    static QString formatFileSize(qint64 size);
 };
 
 #endif // COMMON_H
