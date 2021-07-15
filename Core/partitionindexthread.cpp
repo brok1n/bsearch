@@ -33,7 +33,7 @@ void PartitionIndexThread::run()
         return;
     }
     dir.setFilter(QDir::Readable|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
-    dir.setSorting(QDir::DirsFirst);
+    dir.setSorting(QDir::DirsLast);
     QFileInfoList fileList = dir.entryInfoList();
 
     //分区根节点
@@ -146,6 +146,7 @@ void PartitionIndexThread::run()
         }
         else
         {
+            node->setFileSize(fileInfo.size());
 //                DataCenter::GetInstance()->fileList()->append(fileInfo);
         }
     }

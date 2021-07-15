@@ -21,6 +21,7 @@ const QList<QString> FILE_TYPE_VIDEO = QList<QString>() << ".rm" << ".rmvb" << "
 const QList<QString> FILE_TYPE_IMAGE = QList<QString>() << ".pfd" << ".ptimage" << ".ptpage" << ".bmp" << ".dib" << ".rel" << ".gif" << ".ico" << ".heic" << ".cur" << ".jbg" << ".jfif" << ".jp2" << ".j2k" << ".jpc" << ".j2c" << ".jpg" << ".jpe" << ".jpeg" << ".mng" << ".jng" << ".png" << ".pcx" << ".pgx" << ".pnm" << ".pgm" << ".ppm" << ".psd" << ".ras" << ".nef" << ".crw" << ".cr2" << ".mrw" << ".raf" << ".erf" << ".3fr" << ".dcr" << ".raw" << ".rw2" << ".dng" << ".pef" << ".x3f" << ".arw" << ".sr2" << ".mef" << ".orf" << ".ska" << ".svg" << ".dxf" << ".tga" << ".tif" << ".tiff" << ".wbm" << ".wbmp" << ".webp" << ".wmf" << ".emf";
 const QList<QString> FILE_TYPE_DOCUMENT = QList<QString>() << ".doc" << ".docx" << ".xls" << ".xlsx" << ".csv" << ".ppt" << ".pptx" << ".pdf" << ".txt" << ".htm" << ".html" << ".xml" << ".json";
 const QList<QString> FILE_TYPE_COMPRESS = QList<QString>() << ".zip" << ".rar" << ".gz" << ".tar" << ".gzip" << ".cab" << ".uue" << ".arj" << ".bz2" << ".lzh" << ".jar" << ".ace" << ".7-zip" << ".z" << ".iso";
+const QList<QString> FILE_TYPE_EXECUTABLE = QList<QString>() << ".exe" << ".bat" << ".com" << ".msi" << ".vbs" << ".cmd" << ".pkg" << ".run" << ".rpm" << ".deb" << ".app";
 
 enum FILE_TYPE
 {
@@ -29,38 +30,40 @@ enum FILE_TYPE
     FILE_VIDEO,
     FILE_IMAGE,
     FILE_DOCUMENT,
-    FILE_COMPRESS
+    FILE_COMPRESS,
+    FILE_EXECUTABLE,
+    FILE_DIR
 };
 
-const QString FILE_TYPE_NAME[6] =
+const QString FILE_TYPE_NAME[8] =
 {
     "全部",
     "音乐",
     "视频",
     "图片",
     "文档",
-    "压缩包"
+    "压缩包",
+    "可执行文件",
+    "文件夹"
 };
 
 
 struct Node {
+    //文件名
     QString name = "";
+    //文件扩展名
     QString _ext = "";
+    //子文件列表
     QList<Node*> childs;
+    //是否是文件夹
     bool isDir = false;
+    //父节点 所属文件夹
     Node *parent = nullptr;
+    //文件类型 音乐、视频、图片、文档、压缩包、可执行文件
     int _fileType = -1;
+    //文件大小 64位
+    qint64 _fileSize = 0;
 
-//    static Node* create()
-//    {
-//        Node *node = new Node();
-//        node->name = "";
-//        node->_ext = "";
-//        node->isDir = false;
-//        node->parent = nullptr;
-//        node->_fileType = -1;
-//        return node;
-//    }
 
     static Node* create(QString name="", Node *parent=nullptr, bool isdir=false, int file_type=-1, QString ext="")
     {
@@ -82,6 +85,23 @@ struct Node {
     {
         childs.append(node);
         node->parent = this;
+    }
+
+    //完整路径
+    QString dir()
+    {
+        if(isDir)
+        {
+            return eachParent(this).replace("//", "/");
+        }
+        else if(this->parent == nullptr)
+        {
+            return "";
+        }
+        else
+        {
+            return eachParent(this->parent).replace("//", "/");
+        }
     }
 
     //完整路径
@@ -145,12 +165,6 @@ struct Node {
             return _fileType;
         }
 
-
-//        for(int i = 0; i < a.len; i ++)
-//        {
-
-//        }
-
         if(FILE_TYPE_MUSIC.contains(ext))
         {
             _fileType = FILE_TYPE::FILE_MUSIC;
@@ -171,12 +185,30 @@ struct Node {
         {
             _fileType = FILE_TYPE::FILE_COMPRESS;
         }
+        else if(FILE_TYPE_EXECUTABLE.contains(ext))
+        {
+            _fileType = FILE_TYPE::FILE_EXECUTABLE;
+        }
+        else if(isDir)
+        {
+            _fileType = FILE_TYPE::FILE_DIR;
+        }
         else
         {
             _fileType = FILE_TYPE::FILE_ALL;
         }
 
         return _fileType;
+    }
+
+    void setFileSize(qint64 size)
+    {
+        this->_fileSize = size;
+    }
+
+    qint64 fileSize()
+    {
+        return this->_fileSize;
     }
 };
 

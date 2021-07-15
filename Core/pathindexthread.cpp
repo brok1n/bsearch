@@ -70,7 +70,7 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
 //    qDebug() << "PathIndexThread each:" << info.filePath();
     QDir dir(info.filePath());
     dir.setFilter(QDir::Readable|QDir::Hidden|QDir::Files|QDir::NoSymLinks|QDir::Dirs|QDir::NoDotAndDotDot);
-    dir.setSorting(QDir::DirsFirst);
+    dir.setSorting(QDir::DirsLast);
     QFileInfoList fileList = dir.entryInfoList();
     for(int i = 0; i < fileList.size(); i ++)
     {
@@ -115,6 +115,7 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
         }
         else
         {
+            node->setFileSize(f.size());
 //            qDebug() << "file:" << f.filePath();
 //            DataCenter::GetInstance()->filePathList()->append(f.filePath());
 //            DataCenter::GetInstance()->fileList()->append(f);
