@@ -12,10 +12,7 @@ IndexThread::IndexThread()
 
 IndexThread::~IndexThread()
 {
-    for(int i = 0; i < mPartitionThreadList.size(); i ++)
-    {
-        mPartitionThreadList[i]->stop();
-    }
+    qDebug() << "~IndexThread()";
 }
 
 void IndexThread::run()
@@ -34,10 +31,11 @@ void IndexThread::run()
     for(int i = 0; i < count; ++i)
     {
         QStorageInfo diskInfo = list.at(i);
-        qint64 freeSize = diskInfo.bytesFree();
+        //qint64 freeSize = diskInfo.bytesFree();
         qint64 totalSize = diskInfo.bytesTotal();
         qDebug() << "开始处理磁盘：" << diskInfo.name() << " " << diskInfo.rootPath();
         Node *node = Node::create(diskInfo.rootPath(), nullptr, true);
+        node->setFileSize(totalSize);
         DataCenter::GetInstance()->fileTree()->insert(diskInfo.rootPath(), node);
         PartitionIndexThread *pit = new PartitionIndexThread(diskInfo.rootPath());
         mPartitionThreadList.append(pit);
@@ -50,6 +48,7 @@ void IndexThread::run()
     {
         PartitionIndexThread *thread = mPartitionThreadList.at(i);
         thread->wait();
+        thread->deleteLater();
     }
 
     qDebug() << "所有磁盘扫描完毕!";
@@ -64,5 +63,6 @@ void IndexThread::stop()
     {
         PartitionIndexThread *thread = mPartitionThreadList.at(i);
         thread->stop();
+        thread->deleteLater();
     }
 }

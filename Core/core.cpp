@@ -24,9 +24,17 @@ Core::~Core()
 {
     for(int i = 0; i < mSearchThreadList.size(); i ++)
     {
-        delete mSearchThreadList.at(i);
+        mSearchThreadList.at(i)->stop();
+        mSearchThreadList.at(i)->wait();
+        mSearchThreadList.at(i)->deleteLater();
     }
-    qDebug("Core delete");
+    if(mSearchManager != nullptr)
+    {
+        mSearchManager->stop();
+        mSearchManager->wait();
+        mSearchManager->deleteLater();
+    }
+    qDebug("~Core()");
 }
 
 bool Core::addControlPanel(qint64 panelId)
@@ -41,12 +49,13 @@ bool Core::addControlPanel(qint64 panelId)
 
 void Core::releaseControlPanel(qint64 panelId)
 {
-    mPanelIdList.removeOne(panelId);
-    if(mPanelIdList.isEmpty())
+    qDebug() << "release control panel:" << panelId;
+    if(mPanelIdList.size() <= 1)
     {
         //控制面板为空，可以销毁了
         Core::Release();
     }
+    mPanelIdList.removeOne(panelId);
 }
 
 Core *Core::GetInstance()
@@ -64,8 +73,11 @@ Core *Core::GetInstance()
 
 void Core::Release()
 {
+    qDebug() << "Core::Release";
     DataCenter::Release();
+    qDebug() << "Core::Release:DataCenter";
     IndexManager::Release();
+    qDebug() << "Core::Release:IndexManager";
     delete mInstance;
 }
 
@@ -81,15 +93,6 @@ void Core::search(QString key, int fileType)
 
     mSearchManager = new SearchManager(key, fileType);
     mSearchManager->start();
-
-//    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();
-//    for(int i = 0; i < keys.size(); i ++)
-//    {
-//        Node *node = DataCenter::GetInstance()->fileTree()->value(keys.at(i));
-//        SearchThread *searchThread = new SearchThread(node, key);
-//        mSearchThreadList.append(searchThread);
-//        searchThread->start();
-//    }
 }
 
 bool Core::init()
@@ -99,31 +102,26 @@ bool Core::init()
 
 bool Core::loadData()
 {
-
+    return false;
 }
 
 bool Core::saveData()
 {
-
+    return false;
 }
 
-bool Core::start()
+void Core::start()
 {
     QThreadPool::globalInstance()->setMaxThreadCount(200);
     IndexManager::GetInstance()->start();
-//    QElapsedTimer timer;
-//    Node *node = new Node();
-//    QFileInfo info("E:\\workspace");
-//    node->name = info.fileName();
-//    PathIndexThread *pathIndexThread = new PathIndexThread(info, node, 0);
-//    pathIndexThread->start();
-//    pathIndexThread->wait();
-//    qint64 useTime = timer.elapsed();
-//    pathIndexThread->printNode(node, 1);
-//    qDebug() << "use time:" << useTime;
 }
 
-bool Core::stop()
+void Core::stop()
 {
-
+    IndexManager::GetInstance()->stop();
+    if(mSearchManager != nullptr)
+    {
+        mSearchManager->stop();
+        mSearchManager->wait();
+    }
 }

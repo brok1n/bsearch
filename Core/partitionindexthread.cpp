@@ -17,7 +17,15 @@ PartitionIndexThread::PartitionIndexThread(QString rootPath)
 
 PartitionIndexThread::~PartitionIndexThread()
 {
-
+    for(int i = 0; i < mPathThreadList.size(); i ++)
+    {
+        PathIndexRunnable *thread = mPathThreadList.at(i);
+        thread->stop();
+    }
+    mThreadPool->waitForDone();
+    mThreadPool->clear();
+    mThreadPool->deleteLater();
+    qDebug() << "~PartitionIndexThread():" << mRootPath;
 }
 
 void PartitionIndexThread::run()
@@ -60,7 +68,7 @@ void PartitionIndexThread::run()
         QString home3DPath = QString(homePath).append('/').append("3D Objects");
         QFileInfo home3DInfo(home3DPath);
         Node *home3DNode = Node::create(home3DInfo.fileName(), lastNode, true);
-        PathIndexThread *pathThread = new PathIndexThread(home3DInfo, home3DNode, 1, mThreadPool);
+        PathIndexRunnable *pathThread = new PathIndexRunnable(home3DInfo, home3DNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -68,7 +76,7 @@ void PartitionIndexThread::run()
         QString homeVideosPath = QString(homePath).append('/').append("Videos");
         QFileInfo homeVideosInfo(homeVideosPath);
         Node *homeVideosNode = Node::create(homeVideosInfo.fileName(), lastNode, true);
-        pathThread = new PathIndexThread(homeVideosInfo, homeVideosNode, 1, mThreadPool);
+        pathThread = new PathIndexRunnable(homeVideosInfo, homeVideosNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -77,7 +85,7 @@ void PartitionIndexThread::run()
         QString homePicturesPath = QString(homePath).append('/').append("Pictures");
         QFileInfo homePicturesInfo(homePicturesPath);
         Node *homePicturesNode = Node::create(homePicturesInfo.fileName(), lastNode, true);
-        pathThread = new PathIndexThread(homePicturesInfo, homePicturesNode, 1, mThreadPool);
+        pathThread = new PathIndexRunnable(homePicturesInfo, homePicturesNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -85,7 +93,7 @@ void PartitionIndexThread::run()
         QString homeDocumentsPath = QString(homePath).append('/').append("Documents");
         QFileInfo homeDocumentsInfo(homeDocumentsPath);
         Node *homeDocumentsNode = Node::create(homeDocumentsInfo.fileName(), lastNode, true);
-        pathThread = new PathIndexThread(homeDocumentsInfo, homeDocumentsNode, 1, mThreadPool);
+        pathThread = new PathIndexRunnable(homeDocumentsInfo, homeDocumentsNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -93,7 +101,7 @@ void PartitionIndexThread::run()
         QString homeDownloadsPath = QString(homePath).append('/').append("Downloads");
         QFileInfo homeDownloadsInfo(homeDownloadsPath);
         Node *homeDownloadsNode = Node::create(homeDownloadsInfo.fileName(), lastNode, true);
-        pathThread = new PathIndexThread(homeDownloadsInfo, homeDownloadsNode, 1, mThreadPool);
+        pathThread = new PathIndexRunnable(homeDownloadsInfo, homeDownloadsNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -101,7 +109,7 @@ void PartitionIndexThread::run()
         QString homeMusicPath = QString(homePath).append('/').append("Music");
         QFileInfo homeMusicInfo(homeMusicPath);
         Node *homeMusicNode = Node::create(homeMusicInfo.fileName(), lastNode, true);
-        pathThread = new PathIndexThread(homeMusicInfo, homeMusicNode, 1, mThreadPool);
+        pathThread = new PathIndexRunnable(homeMusicInfo, homeMusicNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -109,7 +117,7 @@ void PartitionIndexThread::run()
         QString homeDesktopPath = QString(homePath).append('/').append("Desktop");
         QFileInfo homeDesktopInfo(homeDesktopPath);
         Node *homeDesktopNode = Node::create(homeDesktopInfo.fileName(), lastNode, true);
-        pathThread = new PathIndexThread(homeDesktopInfo, homeDesktopNode, 1, mThreadPool);
+        pathThread = new PathIndexRunnable(homeDesktopInfo, homeDesktopNode, 1, mThreadPool);
         mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
@@ -138,7 +146,7 @@ void PartitionIndexThread::run()
                 continue;
             }
 //          qDebug() << "pathIndex:" << fileInfo.filePath();
-            PathIndexThread *pathThread = new PathIndexThread(fileInfo, node, 0, mThreadPool);
+            PathIndexRunnable *pathThread = new PathIndexRunnable(fileInfo, node, 0, mThreadPool);
             mPathThreadList.append(pathThread);
             mThreadPool->start(pathThread);
         }
@@ -157,8 +165,8 @@ void PartitionIndexThread::stop()
     mRunning = false;
     for(int i = 0; i < mPathThreadList.size(); i ++)
     {
-        PathIndexThread *thread = mPathThreadList.at(i);
-        thread->stop();
+        PathIndexRunnable *runnable = mPathThreadList.at(i);
+        runnable->stop();
     }
 }
 

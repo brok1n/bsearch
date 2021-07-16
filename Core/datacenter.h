@@ -22,10 +22,7 @@ public:
     static void Release();
     ~DataCenter();
 
-//    QList<QFileInfo>* fileList();
-//    QList<QString>* filePathList();
     QMap<QString, Node*>* fileTree();
-//    QThreadPool* threadPool();
     QList<Node*>* resultList();
 
     bool isSearchFinished();
@@ -50,16 +47,20 @@ signals:
 private:
     static DataCenter *mInstance;
     static QMutex  mMutex;
-//    QList<QFileInfo> *mFileList;
-//    QList<QString> *mFilePathList;
 
+    //所有分区文件Node列表，分区跟路径 => 跟节点Node
     QMap<QString, Node*> *mTree;
-    QThreadPool *mPool;
+    //搜索结果列表
     QList<Node*> *mResultList;
+    //是否搜索完毕
     bool mSearchFinished;
+    //总分区数量
     int mPartitionCount;
+    //分区扫描完毕数量
     int mScanFinishedCount;
+    //单分区扫描线程数
     int mSingleThreadCount;
+    //磁盘扫描是否完毕
     bool mScanDiskFinished;
 };
 

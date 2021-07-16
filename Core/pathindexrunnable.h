@@ -1,5 +1,5 @@
-#ifndef PATHINDEXTHREAD_H
-#define PATHINDEXTHREAD_H
+#ifndef PATHINDEXRUNNABLE_H
+#define PATHINDEXRUNNABLE_H
 
 #include <QThread>
 //#include <QObject>
@@ -8,13 +8,12 @@
 
 #include "datacenter.h"
 
-//class PathIndexThread : public QThread
-class PathIndexThread : public QRunnable
+class PathIndexRunnable : public QRunnable
 {
 //    Q_OBJECT
 public:
-    PathIndexThread(QFileInfo info, Node *, int, QThreadPool*);
-    ~PathIndexThread();
+    PathIndexRunnable(QFileInfo info, Node *, int, QThreadPool*);
+    ~PathIndexRunnable();
     void run();
 
     void stop();
@@ -27,9 +26,9 @@ private:
     bool mRunning;
     Node *mRootNode;
     int mLevel;
-    QList<PathIndexThread*> mPathIndexThreadList;
+    QList<PathIndexRunnable*> mPathIndexRunnableList;
     QThreadPool *mThreadPool;
 
 };
 
-#endif // PATHINDEXTHREAD_H
+#endif // PATHINDEXRUNNABLE_H

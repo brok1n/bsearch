@@ -7,7 +7,8 @@ SOURCES += \
     $$PWD/indexmanager.cpp \
     $$PWD/indexthread.cpp \
     $$PWD/partitionindexthread.cpp \
-    $$PWD/pathindexthread.cpp \
+    $$PWD/pathindexrunnable.cpp \
+    $$PWD/preferences.cpp \
     $$PWD/searchmanager.cpp \
     $$PWD/searchthread.cpp
 
@@ -19,7 +20,8 @@ HEADERS += \
     $$PWD/indexmanager.h \
     $$PWD/indexthread.h \
     $$PWD/partitionindexthread.h \
-    $$PWD/pathindexthread.h \
+    $$PWD/pathindexrunnable.h \
+    $$PWD/preferences.h \
     $$PWD/searchmanager.h \
     $$PWD/searchthread.h
 

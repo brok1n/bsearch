@@ -28,32 +28,31 @@ IndexManager *IndexManager::GetInstance()
 
 void IndexManager::Release()
 {
-
+    qDebug() << "IndexManager::Release()";
     delete mInstance;
 }
 
 IndexManager::~IndexManager()
 {
+    if(mIndexThread != nullptr)
+    {
+        mIndexThread->stop();
+        mIndexThread->deleteLater();
+    }
 
-    qDebug("IndexManager delete");
+    qDebug("~IndexManager():end");
 }
 
-bool IndexManager::start()
+void IndexManager::start()
 {
-
     mIndexThread = new IndexThread();
     mIndexThread->start();
-//    mIndexThread->wait();
+}
 
-
-//    QList<QString> keys = DataCenter::GetInstance()->fileTree()->keys();
-//    for(int i = 0; i < keys.size(); i ++)
-//    {
-//        Node *node = DataCenter::GetInstance()->fileTree()->value(keys.at(i));
-
-//        DataCenter::GetInstance()->printNode(node, 0);
-//    }
-
+void IndexManager::stop()
+{
+    mIndexThread->stop();
+    mIndexThread->wait();
 }
 
 

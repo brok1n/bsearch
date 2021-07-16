@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QObject>
 #include <QThreadPool>
-#include "pathindexthread.h"
+#include "pathindexrunnable.h"
 
 class PartitionIndexThread : public QThread
 {
@@ -20,7 +20,7 @@ public:
     bool isWinSystemPartition(QString);
 
 private:
-    QList<PathIndexThread*> mPathThreadList;
+    QList<PathIndexRunnable*> mPathThreadList;
     QString mRootPath;
     bool mRunning;
     QThreadPool *mThreadPool;

@@ -1,12 +1,12 @@
 #include "datacenter.h"
-#include "pathindexthread.h"
+#include "pathindexrunnable.h"
 
 #include <QDir>
 #include <QDebug>
 #include <QTextStream>
 #include <QThreadPool>
 
-PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level, QThreadPool *pool)
+PathIndexRunnable::PathIndexRunnable(QFileInfo info, Node *node, int level, QThreadPool *pool)
     : mInfo(info)
     , mRunning(false)
     , mRootNode(node)
@@ -16,30 +16,28 @@ PathIndexThread::PathIndexThread(QFileInfo info, Node *node, int level, QThreadP
 
 }
 
-PathIndexThread::~PathIndexThread()
+PathIndexRunnable::~PathIndexRunnable()
 {
-//    qDebug() << "PathIndexThread 删除" << mInfo.filePath();
+    for(int i = 0; i < mPathIndexRunnableList.size(); i ++)
+    {
+        PathIndexRunnable *runnable = mPathIndexRunnableList.at(i);
+        runnable->stop();
+    }
+    mThreadPool->waitForDone();
+    mThreadPool->deleteLater();
+    qDebug() << "~PathIndexRunnable():" << mInfo.filePath();
 }
 
-void PathIndexThread::run()
+void PathIndexRunnable::run()
 {
 
 //    qDebug() << "开始遍历：" << mInfo.filePath();
     mRunning = true;
     eachDir(mInfo, mRootNode);
-//    for(int i = 0; i < mPathIndexThreadList.size(); i ++)
-//    {
-//        PathIndexThread *thread = mPathIndexThreadList.at(i);
-//        thread->wait();
-//    }
-//    qDebug() << "PathIndexThread finished:" << mInfo.filePath();
-//    printNode(mRootNode, 1);
-//    qDebug() << "delete:" << mInfo.filePath();
-//    delete this;
 }
 
 
-void PathIndexThread::printNode(Node *node, int level)
+void PathIndexRunnable::printNode(Node *node, int level)
 {
     QString tmpName = "";
     for(int i = 0; i < level * 5; i ++)
@@ -56,12 +54,17 @@ void PathIndexThread::printNode(Node *node, int level)
 }
 
 
-void PathIndexThread::stop()
+void PathIndexRunnable::stop()
 {
     mRunning = false;
+    for(int i = 0; i < mPathIndexRunnableList.size(); i ++)
+    {
+        PathIndexRunnable *runnable = mPathIndexRunnableList.at(i);
+        runnable->stop();
+    }
 }
 
-void PathIndexThread::eachDir(QFileInfo info, Node *parent)
+void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
 {
     if(!mRunning)
     {
@@ -102,8 +105,8 @@ void PathIndexThread::eachDir(QFileInfo info, Node *parent)
             }
             if(mLevel < level)
             {
-                PathIndexThread *pathThread = new PathIndexThread(f, node, mLevel+1, mThreadPool);
-                mPathIndexThreadList.append(pathThread);
+                PathIndexRunnable *pathThread = new PathIndexRunnable(f, node, mLevel+1, mThreadPool);
+                mPathIndexRunnableList.append(pathThread);
                 mThreadPool->start(pathThread);
             }
             else

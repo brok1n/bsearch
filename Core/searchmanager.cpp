@@ -11,7 +11,14 @@ SearchManager::SearchManager(QString key, int fileType)
 
 SearchManager::~SearchManager()
 {
-
+    for(int i = 0; i < mThreadList.size(); i ++)
+    {
+        SearchThread *thread = mThreadList.at(i);
+        thread->stop();
+        thread->wait();
+        thread->deleteLater();
+    }
+    qDebug() << "~SearchManager()";
 }
 
 void SearchManager::run()

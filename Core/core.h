@@ -32,8 +32,8 @@ public:
     bool loadData();
     bool saveData();
 
-    bool start();
-    bool stop();
+    void start();
+    void stop();
 
 private:
     static Core *mInstance;

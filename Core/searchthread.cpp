@@ -11,7 +11,8 @@ SearchThread::SearchThread(Node *node, QString key, int fileType)
 
 SearchThread::~SearchThread()
 {
-
+    mNode = nullptr;
+    qDebug() << "~SearchThread()";
 }
 
 void SearchThread::run()

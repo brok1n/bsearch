@@ -6,8 +6,6 @@ QMutex  DataCenter::mMutex;
 
 DataCenter::DataCenter(QObject *parent)
     : QObject(parent)
-//    , mFileList(new QList<QFileInfo>())
-//    , mFilePathList(new QList<QString>())
     , mTree(new QMap<QString, Node*>())
     , mResultList(new QList<Node*>())
     , mSearchFinished(false)
@@ -15,35 +13,22 @@ DataCenter::DataCenter(QObject *parent)
     , mScanFinishedCount(0)
     , mScanDiskFinished(false)
 {
-    mPool = new QThreadPool();
-    mPool->setMaxThreadCount(10);
-    mPool->setExpiryTimeout(-1);
+
 }
 
 DataCenter::~DataCenter()
 {
-    qDebug("DataCenter delete");
+    mTree->clear();
+    delete mTree;
+    mResultList->clear();
+    delete mResultList;
+    qDebug("~DataCenter()");
 }
-
-//QList<QFileInfo> *DataCenter::fileList()
-//{
-//    return mFileList;
-//}
-
-//QList<QString> *DataCenter::filePathList()
-//{
-//    return mFilePathList;
-//}
 
 QMap<QString, Node *>* DataCenter::fileTree()
 {
     return mTree;
 }
-
-//QThreadPool* DataCenter::threadPool()
-//{
-//    return mPool;
-//}
 
 QList<Node*>* DataCenter::resultList()
 {

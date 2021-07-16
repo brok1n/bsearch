@@ -18,7 +18,8 @@ public:
     static void Release();
     ~IndexManager();
 
-    bool start();
+    void start();
+    void stop();
 
 private:
     static IndexManager *mInstance;
