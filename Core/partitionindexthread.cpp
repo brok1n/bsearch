@@ -30,7 +30,7 @@ PartitionIndexThread::~PartitionIndexThread()
 
 void PartitionIndexThread::run()
 {
-//    qDebug("PartitionIndexThread run:");
+    qDebug("PartitionIndexThread run:");
     QElapsedTimer partitionTimer;
     partitionTimer.start();
     mRunning = true;

@@ -112,7 +112,6 @@ bool Core::saveData()
 
 void Core::start()
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(200);
     IndexManager::GetInstance()->start();
 }
 

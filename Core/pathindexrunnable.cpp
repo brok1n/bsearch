@@ -18,14 +18,7 @@ PathIndexRunnable::PathIndexRunnable(QFileInfo info, Node *node, int level, QThr
 
 PathIndexRunnable::~PathIndexRunnable()
 {
-    for(int i = 0; i < mPathIndexRunnableList.size(); i ++)
-    {
-        PathIndexRunnable *runnable = mPathIndexRunnableList.at(i);
-        runnable->stop();
-    }
-    mThreadPool->waitForDone();
-    mThreadPool->deleteLater();
-    qDebug() << "~PathIndexRunnable():" << mInfo.filePath();
+//    qDebug() << "~PathIndexRunnable():" << mInfo.filePath();
 }
 
 void PathIndexRunnable::run()
