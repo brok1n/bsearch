@@ -142,10 +142,10 @@ void PartitionIndexThread::run()
         if(fileInfo.isDir())
         {
             node->isDir = true;
-            if(node->name.startsWith("$") || node->name.startsWith("."))
-            {
-                continue;
-            }
+//            if(node->name.startsWith("$") || node->name.startsWith("."))
+//            {
+//                continue;
+//            }
 //          qDebug() << "pathIndex:" << fileInfo.filePath();
             PathIndexRunnable *pathThread = new PathIndexRunnable(fileInfo, node, 0, mThreadPool);
             mPathThreadList.append(pathThread);

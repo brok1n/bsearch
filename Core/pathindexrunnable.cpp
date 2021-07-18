@@ -82,10 +82,10 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
         {
             node->isDir = true;
             QString tmpName = node->name.toLower();
-            if(tmpName.startsWith(".") || tmpName.startsWith("_") || tmpName.startsWith("node_modules"))
-            {
-                continue;
-            }
+//            if(tmpName.startsWith(".") || tmpName.startsWith("_") || tmpName.startsWith("node_modules"))
+//            {
+//                continue;
+//            }
 //            qDebug() << "dir:" << f.filePath();
             int level = 5;
             if(DataCenter::GetInstance()->scanFinishedCount() >= DataCenter::GetInstance()->partitionCount() / 2)
