@@ -4,6 +4,7 @@
 #include <QStorageInfo>
 #include <QDebug>
 #include <QThreadPool>
+#include <QElapsedTimer>
 
 IndexThread::IndexThread()
 {
@@ -12,6 +13,12 @@ IndexThread::IndexThread()
 
 IndexThread::~IndexThread()
 {
+    for(int i = 0; i < mPartitionThreadList.size(); i ++)
+    {
+        PartitionIndexThread *thread = mPartitionThreadList.at(i);
+        thread->deleteLater();
+    }
+
     qDebug() << "~IndexThread()";
 }
 
@@ -42,13 +49,10 @@ void IndexThread::run()
         pit->start();
     }
 
-
-
     for(int i = 0; i < mPartitionThreadList.size(); i ++)
     {
         PartitionIndexThread *thread = mPartitionThreadList.at(i);
         thread->wait();
-        thread->deleteLater();
     }
 
     qDebug() << "所有磁盘扫描完毕!";

@@ -5,6 +5,7 @@
 #include <QFileInfoList>
 #include <QThreadPool>
 #include <QStandardPaths>
+#include <QElapsedTimer>
 
 PartitionIndexThread::PartitionIndexThread(QString rootPath)
     : mRootPath(rootPath)
