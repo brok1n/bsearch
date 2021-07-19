@@ -26,13 +26,14 @@ Core::~Core()
     {
         mSearchThreadList.at(i)->stop();
         mSearchThreadList.at(i)->wait();
-        mSearchThreadList.at(i)->deleteLater();
+        delete mSearchThreadList.at(i);
     }
+    mSearchThreadList.clear();
     if(mSearchManager != nullptr)
     {
         mSearchManager->stop();
         mSearchManager->wait();
-        mSearchManager->deleteLater();
+        delete mSearchManager;
     }
     qDebug("~Core()");
 }
@@ -47,15 +48,22 @@ bool Core::addControlPanel(qint64 panelId)
     return true;
 }
 
-void Core::releaseControlPanel(qint64 panelId)
+bool Core::releaseControlPanel(qint64 panelId)
 {
     qDebug() << "release control panel:" << panelId;
     if(mPanelIdList.size() <= 1)
     {
         //控制面板为空，可以销毁了
         Core::Release();
+        return true;
     }
     mPanelIdList.removeOne(panelId);
+    return false;
+}
+
+int Core::controlPanelCount()
+{
+    return mPanelIdList.size();
 }
 
 Core *Core::GetInstance()

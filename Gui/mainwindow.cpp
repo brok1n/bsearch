@@ -2,9 +2,14 @@
 #include "ui_mainwindow.h"
 #include "core.h"
 #include "threadpooltest.h"
+#include <QApplication>
 #include <QDateTime>
 #include <QDebug>
+#include <QRect>
 #include <QThread>
+#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,6 +18,18 @@ MainWindow::MainWindow(QWidget *parent)
     , mWaitScanDiskTimer(new QTimer())
 {
     ui->setupUi(this);
+
+    //如果窗口数量 > 0
+    int controlPanelCount = Core::GetInstance()->controlPanelCount();
+    if(controlPanelCount > 0)
+    {
+        //获取可用桌面大小
+        QScreen *screen = QGuiApplication::screenAt(this->pos());
+        QRect deskRect = screen->availableGeometry();
+        this->setGeometry(deskRect.width() / 2 - width() / 2 + controlPanelCount * 30, deskRect.height() / 2 - height() / 2 + controlPanelCount * 30, width(), height());
+        //多窗口时，让子窗口被关闭后自动释放
+        setAttribute(Qt::WA_DeleteOnClose);
+    }
 
     mPanelId = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
@@ -40,6 +57,7 @@ MainWindow::~MainWindow()
     mWaitScanDiskTimer->stop();
     delete mWaitScanDiskTimer;
     delete ui;
+    qDebug() << "窗口析构函数:" << mPanelId << ":end.";
 }
 
 void MainWindow::on_keyEdit_returnPressed()
@@ -290,12 +308,15 @@ void MainWindow::on_actionCreateWindow_triggered()
 void MainWindow::on_actionClose_triggered()
 {
     this->close();
-    this->deleteLater();
 }
 
 void MainWindow::on_actionQuit_triggered()
 {
     this->close();
+    if(Core::GetInstance()->controlPanelCount() > 1)
+    {
+        Core::Release();
+    }
     qApp->quit();
 }
 
@@ -309,7 +330,7 @@ void MainWindow::on_actionFixTop_toggled(bool arg1)
     }
     else
     {
-        setWindowFlags(nullptr);
+        setWindowFlags(windowFlags() ^ Qt::WindowStaysOnTopHint);
         show();
     }
 }
