@@ -16,17 +16,15 @@ public:
     ~PathIndexRunnable();
     void run();
 
-    void stop();
     void eachDir(QFileInfo, Node*);
 
     void printNode(Node*, int);
 
 private:
     QFileInfo mInfo;
-    bool mRunning;
     Node *mRootNode;
     int mLevel;
-    QList<PathIndexRunnable*> mPathIndexRunnableList;
+//    QList<PathIndexRunnable*> mPathIndexRunnableList;
     QThreadPool *mThreadPool;
 
 };

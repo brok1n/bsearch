@@ -34,12 +34,8 @@ void IndexManager::Release()
 
 IndexManager::~IndexManager()
 {
-    if(mIndexThread != nullptr)
-    {
-        mIndexThread->stop();
-        mIndexThread->deleteLater();
-    }
-
+    mInstance->stop();
+    delete  mIndexThread;
     qDebug("~IndexManager():end");
 }
 
@@ -51,8 +47,10 @@ void IndexManager::start()
 
 void IndexManager::stop()
 {
+    qDebug() << "IndexManager:stop()";
     mIndexThread->stop();
     mIndexThread->wait();
+    qDebug() << "IndexManager:stop():end";
 }
 
 

@@ -20,9 +20,7 @@ public:
     bool isWinSystemPartition(QString);
 
 private:
-    QList<PathIndexRunnable*> mPathThreadList;
     QString mRootPath;
-    bool mRunning;
     QThreadPool *mThreadPool;
 };
 

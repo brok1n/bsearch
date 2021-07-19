@@ -13,12 +13,13 @@ IndexThread::IndexThread()
 
 IndexThread::~IndexThread()
 {
+    this->stop();
     for(int i = 0; i < mPartitionThreadList.size(); i ++)
     {
-        PartitionIndexThread *thread = mPartitionThreadList.at(i);
-        thread->deleteLater();
+//        mPartitionThreadList.at(i)->deleteLater();
+        delete mPartitionThreadList.at(i);
     }
-
+    mPartitionThreadList.clear();
     qDebug() << "~IndexThread()";
 }
 
@@ -29,14 +30,16 @@ void IndexThread::run()
 
     //磁盘扫描状态
     DataCenter::GetInstance()->setScanDiskFinished(false);
-
-    mRunning = true;
     QList<QStorageInfo> list = QStorageInfo::mountedVolumes();
     int count = list.size();
     QString strInfo = "";
     DataCenter::GetInstance()->setPartitionCount(list.size());
     for(int i = 0; i < count; ++i)
     {
+        if(!DataCenter::GetInstance()->isRunning())
+        {
+            break;
+        }
         QStorageInfo diskInfo = list.at(i);
         //qint64 freeSize = diskInfo.bytesFree();
         qint64 totalSize = diskInfo.bytesTotal();
@@ -51,8 +54,17 @@ void IndexThread::run()
 
     for(int i = 0; i < mPartitionThreadList.size(); i ++)
     {
+        if(!DataCenter::GetInstance()->isRunning())
+        {
+            break;
+        }
         PartitionIndexThread *thread = mPartitionThreadList.at(i);
         thread->wait();
+    }
+
+    if(!DataCenter::GetInstance()->isRunning())
+    {
+        return;
     }
 
     qDebug() << "所有磁盘扫描完毕!";
@@ -65,8 +77,10 @@ void IndexThread::stop()
 {
     for(int i = 0; i < mPartitionThreadList.size(); i ++)
     {
-        PartitionIndexThread *thread = mPartitionThreadList.at(i);
-        thread->stop();
-        thread->deleteLater();
+        mPartitionThreadList.at(i)->stop();
+    }
+    for(int i = 0; i < mPartitionThreadList.size(); i ++)
+    {
+        mPartitionThreadList.at(i)->wait();
     }
 }

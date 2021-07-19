@@ -74,10 +74,15 @@ Core *Core::GetInstance()
 void Core::Release()
 {
     qDebug() << "Core::Release";
-    DataCenter::Release();
-    qDebug() << "Core::Release:DataCenter";
-    IndexManager::Release();
+    qDebug() << "Core::Release:stop()";
+    mInstance->stop();
+    qDebug() << "Core::Release:stop():End";
     qDebug() << "Core::Release:IndexManager";
+    IndexManager::Release();
+    qDebug() << "Core::Release:IndexManager:End";
+    qDebug() << "Core::Release:DataCenter";
+    DataCenter::Release();
+    qDebug() << "Core::Release:DataCenter:End";
     delete mInstance;
 }
 
@@ -112,11 +117,13 @@ bool Core::saveData()
 
 void Core::start()
 {
+    DataCenter::GetInstance()->setRunning(true);
     IndexManager::GetInstance()->start();
 }
 
 void Core::stop()
 {
+    DataCenter::GetInstance()->setRunning(false);
     IndexManager::GetInstance()->stop();
     if(mSearchManager != nullptr)
     {

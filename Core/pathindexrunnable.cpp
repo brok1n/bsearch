@@ -8,7 +8,6 @@
 
 PathIndexRunnable::PathIndexRunnable(QFileInfo info, Node *node, int level, QThreadPool *pool)
     : mInfo(info)
-    , mRunning(false)
     , mRootNode(node)
     , mLevel(level)
     , mThreadPool(pool)
@@ -23,9 +22,7 @@ PathIndexRunnable::~PathIndexRunnable()
 
 void PathIndexRunnable::run()
 {
-
 //    qDebug() << "开始遍历：" << mInfo.filePath();
-    mRunning = true;
     eachDir(mInfo, mRootNode);
 }
 
@@ -46,20 +43,9 @@ void PathIndexRunnable::printNode(Node *node, int level)
     }
 }
 
-
-void PathIndexRunnable::stop()
-{
-    mRunning = false;
-    for(int i = 0; i < mPathIndexRunnableList.size(); i ++)
-    {
-        PathIndexRunnable *runnable = mPathIndexRunnableList.at(i);
-        runnable->stop();
-    }
-}
-
 void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
 {
-    if(!mRunning)
+    if(!DataCenter::GetInstance()->isRunning())
     {
         return;
     }
@@ -70,11 +56,11 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
     QFileInfoList fileList = dir.entryInfoList();
     for(int i = 0; i < fileList.size(); i ++)
     {
-        QThread::usleep(0);
-        if(!mRunning)
+        if(!DataCenter::GetInstance()->isRunning())
         {
             return;
         }
+        QThread::usleep(0);
         QFileInfo f = fileList.at(i);
         Node *node = Node::create(f.fileName(), parent);
         node->setFileSize(f.size());
@@ -99,12 +85,19 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
             if(mLevel < level)
             {
                 PathIndexRunnable *pathThread = new PathIndexRunnable(f, node, mLevel+1, mThreadPool);
-                mPathIndexRunnableList.append(pathThread);
                 mThreadPool->start(pathThread);
             }
             else
             {
+                if(!DataCenter::GetInstance()->isRunning())
+                {
+                    return;
+                }
                 eachDir(f, node);
+                if(!DataCenter::GetInstance()->isRunning())
+                {
+                    return;
+                }
             }
         }
     }

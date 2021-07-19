@@ -9,7 +9,6 @@
 
 PartitionIndexThread::PartitionIndexThread(QString rootPath)
     : mRootPath(rootPath)
-    , mRunning(false)
 {
     mThreadPool = new QThreadPool;
     mThreadPool->setMaxThreadCount(DataCenter::GetInstance()->singleThreadCount());
@@ -18,14 +17,9 @@ PartitionIndexThread::PartitionIndexThread(QString rootPath)
 
 PartitionIndexThread::~PartitionIndexThread()
 {
-    for(int i = 0; i < mPathThreadList.size(); i ++)
-    {
-        PathIndexRunnable *thread = mPathThreadList.at(i);
-        thread->stop();
-    }
-    mThreadPool->waitForDone();
-    mThreadPool->clear();
-    mThreadPool->deleteLater();
+    this->stop();
+    delete mThreadPool;
+//    mThreadPool->deleteLater();
     qDebug() << "~PartitionIndexThread():" << mRootPath;
 }
 
@@ -34,11 +28,9 @@ void PartitionIndexThread::run()
     qDebug("PartitionIndexThread run:");
     QElapsedTimer partitionTimer;
     partitionTimer.start();
-    mRunning = true;
     QDir dir(mRootPath);
     if(!dir.isReadable())
     {
-        mRunning = false;
         return;
     }
     dir.setFilter(QDir::Readable|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
@@ -70,7 +62,6 @@ void PartitionIndexThread::run()
         QFileInfo home3DInfo(home3DPath);
         Node *home3DNode = Node::create(home3DInfo.fileName(), lastNode, true);
         PathIndexRunnable *pathThread = new PathIndexRunnable(home3DInfo, home3DNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
         //Videos目录
@@ -78,7 +69,6 @@ void PartitionIndexThread::run()
         QFileInfo homeVideosInfo(homeVideosPath);
         Node *homeVideosNode = Node::create(homeVideosInfo.fileName(), lastNode, true);
         pathThread = new PathIndexRunnable(homeVideosInfo, homeVideosNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
 
@@ -87,7 +77,6 @@ void PartitionIndexThread::run()
         QFileInfo homePicturesInfo(homePicturesPath);
         Node *homePicturesNode = Node::create(homePicturesInfo.fileName(), lastNode, true);
         pathThread = new PathIndexRunnable(homePicturesInfo, homePicturesNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
         //Documents目录
@@ -95,7 +84,6 @@ void PartitionIndexThread::run()
         QFileInfo homeDocumentsInfo(homeDocumentsPath);
         Node *homeDocumentsNode = Node::create(homeDocumentsInfo.fileName(), lastNode, true);
         pathThread = new PathIndexRunnable(homeDocumentsInfo, homeDocumentsNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
         //Downloads目录
@@ -103,7 +91,6 @@ void PartitionIndexThread::run()
         QFileInfo homeDownloadsInfo(homeDownloadsPath);
         Node *homeDownloadsNode = Node::create(homeDownloadsInfo.fileName(), lastNode, true);
         pathThread = new PathIndexRunnable(homeDownloadsInfo, homeDownloadsNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
         //Music目录
@@ -111,7 +98,6 @@ void PartitionIndexThread::run()
         QFileInfo homeMusicInfo(homeMusicPath);
         Node *homeMusicNode = Node::create(homeMusicInfo.fileName(), lastNode, true);
         pathThread = new PathIndexRunnable(homeMusicInfo, homeMusicNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
         //Desktop目录
@@ -119,56 +105,55 @@ void PartitionIndexThread::run()
         QFileInfo homeDesktopInfo(homeDesktopPath);
         Node *homeDesktopNode = Node::create(homeDesktopInfo.fileName(), lastNode, true);
         pathThread = new PathIndexRunnable(homeDesktopInfo, homeDesktopNode, 1, mThreadPool);
-        mPathThreadList.append(pathThread);
         mThreadPool->start(pathThread);
 
         DataCenter::GetInstance()->printNode(rootNode, 0);
 
-        mThreadPool->waitForDone();
-
-        return;
     }
-
-    //遍历分区文件列表
-    for(int i = 0; i < fileList.size(); i ++)
+    else
     {
-        if(!mRunning)
+        //遍历分区文件列表
+        for(int i = 0; i < fileList.size(); i ++)
         {
-            break;
-        }
-        QFileInfo fileInfo = fileList.at(i);
-        Node *node = Node::create(fileInfo.fileName(), rootNode);
-        node->setFileSize(fileInfo.size());
-        if(fileInfo.isDir())
-        {
-            node->isDir = true;
-//            if(node->name.startsWith("$") || node->name.startsWith("."))
-//            {
-//                continue;
-//            }
-//          qDebug() << "pathIndex:" << fileInfo.filePath();
-            PathIndexRunnable *pathThread = new PathIndexRunnable(fileInfo, node, 0, mThreadPool);
-            mPathThreadList.append(pathThread);
-            mThreadPool->start(pathThread);
+            if(!DataCenter::GetInstance()->isRunning())
+            {
+                break;
+            }
+            QFileInfo fileInfo = fileList.at(i);
+            Node *node = Node::create(fileInfo.fileName(), rootNode);
+            node->setFileSize(fileInfo.size());
+            if(fileInfo.isDir())
+            {
+                node->isDir = true;
+    //            if(node->name.startsWith("$") || node->name.startsWith("."))
+    //            {
+    //                continue;
+    //            }
+    //          qDebug() << "pathIndex:" << fileInfo.filePath();
+                PathIndexRunnable *pathThread = new PathIndexRunnable(fileInfo, node, 0, mThreadPool);
+                mThreadPool->start(pathThread);
+            }
         }
     }
 
     mThreadPool->waitForDone();
+
+    if(!DataCenter::GetInstance()->isRunning())
+    {
+        return;
+    }
+
     qint64 useTime = partitionTimer.elapsed();
     qDebug() << "分区处理完毕:" << mRootPath << " 耗时：" << (useTime / 1000) << "秒" << (useTime % 1000) << "毫秒";
 
     DataCenter::GetInstance()->setScanFinishedCount(DataCenter::GetInstance()->scanFinishedCount() + 1);
-
 }
 
 void PartitionIndexThread::stop()
 {
-    mRunning = false;
-    for(int i = 0; i < mPathThreadList.size(); i ++)
-    {
-        PathIndexRunnable *runnable = mPathThreadList.at(i);
-        runnable->stop();
-    }
+    mThreadPool->setMaxThreadCount(0);
+    mThreadPool->clear();
+    mThreadPool->releaseThread();
 }
 
 bool PartitionIndexThread::isWinSystemPartition(QString path)

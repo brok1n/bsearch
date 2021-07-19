@@ -18,7 +18,6 @@ public:
     void stop();
 
 private:
-    bool mRunning;
     QList<PartitionIndexThread*> mPartitionThreadList;
 };
 

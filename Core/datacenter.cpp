@@ -12,6 +12,7 @@ DataCenter::DataCenter(QObject *parent)
     , mPartitionCount(0)
     , mScanFinishedCount(0)
     , mScanDiskFinished(false)
+    , mIsRunning(true)
 {
 
 }
@@ -85,6 +86,16 @@ int DataCenter::singleThreadCount()
 void DataCenter::setSingleThreadCount(int count)
 {
     mSingleThreadCount = count;
+}
+
+bool DataCenter::isRunning()
+{
+    return mIsRunning;
+}
+
+void DataCenter::setRunning(bool status)
+{
+    mIsRunning = status;
 }
 
 DataCenter* DataCenter::GetInstance()

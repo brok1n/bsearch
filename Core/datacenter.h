@@ -40,6 +40,9 @@ public:
     int singleThreadCount();
     void setSingleThreadCount(int);
 
+    bool isRunning();
+    void setRunning(bool);
+
     void printNode(Node*, int);
 
 signals:
@@ -62,6 +65,8 @@ private:
     int mSingleThreadCount;
     //磁盘扫描是否完毕
     bool mScanDiskFinished;
+    //运行状态
+    bool mIsRunning;
 };
 
 #endif // DATACENTER_H
