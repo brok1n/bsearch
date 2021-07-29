@@ -10,6 +10,8 @@
 #include <QDesktopWidget>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QFileIconProvider>
+#include <QFileInfo>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     , mWaitScanDiskTimer(new QTimer())
 {
     ui->setupUi(this);
+
+    this->ui->listWidget->setIconSize(QSize(24, 24));
+    connect(this->ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onListWidgetItemClicked(QListWidgetItem*)));
 
     //如果窗口数量 > 0
     int controlPanelCount = Core::GetInstance()->controlPanelCount();
@@ -86,14 +91,30 @@ void MainWindow::onScanDiskFinished()
     }
 }
 
+void MainWindow::onListWidgetItemClicked(QListWidgetItem *item)
+{
+    QString txt = item->text();
+    QString fullPath = item->data(1).toString();
+    qDebug() << "点击了：" << txt << " fullPath:" << fullPath;
+}
+
 void MainWindow::flushResult()
 {
     QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
+    ui->listWidget->clear();
     for(int i = 0; i < resultList->size(); i ++)
     {
         QListWidgetItem *item=new QListWidgetItem(ui->listWidget);
         //设置列表项的文本
-        item->setText(QString("%1 (%2)").arg(resultList->at(i)->fullPath()).arg(Common::formatFileSize(resultList->at(i)->fileSize())));
+//        item->setText(QString("%1 (%2)").arg(resultList->at(i)->fullPath()).arg(Common::formatFileSize(resultList->at(i)->fileSize())));
+        QString fullPath = resultList->at(i)->fullPath();
+        item->setText(QString("%1").arg(resultList->at(i)->name));
+        QFileInfo fileInfo(fullPath);
+        QFileIconProvider fileIcon;
+        QIcon icon = fileIcon.icon(fileInfo);
+        item->setData(1, fullPath);
+        item->setIcon(icon);
+
         //加载列表项到列表框
         ui->listWidget->addItem(item);
     }
@@ -102,7 +123,7 @@ void MainWindow::flushResult()
 
 void MainWindow::startSearch()
 {
-    ui->listWidget->clear();
+//    ui->listWidget->clear();
     QString key = ui->keyEdit->text();
     if(key.isEmpty())
     {
@@ -135,10 +156,10 @@ void MainWindow::on_filterCBox_currentIndexChanged(int index)
     startSearch();
 }
 
-void MainWindow::on_actionAll_toggled(bool arg1)
+void MainWindow::on_actionAll_toggled(bool checked)
 {
-    qDebug() << "所有:" << arg1;
-    if(arg1)
+    qDebug() << "所有:" << checked;
+    if(checked)
     {
         ui->actionMusic->setChecked(false);
         ui->actionVideo->setChecked(false);
@@ -153,10 +174,10 @@ void MainWindow::on_actionAll_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionMusic_toggled(bool arg1)
+void MainWindow::on_actionMusic_toggled(bool checked)
 {
-    qDebug() << "音乐:" << arg1;
-    if(arg1)
+    qDebug() << "音乐:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionVideo->setChecked(false);
@@ -171,10 +192,10 @@ void MainWindow::on_actionMusic_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionVideo_toggled(bool arg1)
+void MainWindow::on_actionVideo_toggled(bool checked)
 {
-    qDebug() << "视频:" << arg1;
-    if(arg1)
+    qDebug() << "视频:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -189,10 +210,10 @@ void MainWindow::on_actionVideo_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionPicture_toggled(bool arg1)
+void MainWindow::on_actionPicture_toggled(bool checked)
 {
-    qDebug() << "图片:" << arg1;
-    if(arg1)
+    qDebug() << "图片:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -207,10 +228,10 @@ void MainWindow::on_actionPicture_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionDocument_toggled(bool arg1)
+void MainWindow::on_actionDocument_toggled(bool checked)
 {
-    qDebug() << "文档:" << arg1;
-    if(arg1)
+    qDebug() << "文档:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -225,10 +246,10 @@ void MainWindow::on_actionDocument_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionCompress_toggled(bool arg1)
+void MainWindow::on_actionCompress_toggled(bool checked)
 {
-    qDebug() << "压缩包:" << arg1;
-    if(arg1)
+    qDebug() << "压缩包:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -243,10 +264,10 @@ void MainWindow::on_actionCompress_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionExecutable_toggled(bool arg1)
+void MainWindow::on_actionExecutable_toggled(bool checked)
 {
-    qDebug() << "可执行:" << arg1;
-    if(arg1)
+    qDebug() << "可执行:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -261,10 +282,10 @@ void MainWindow::on_actionExecutable_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionDir_toggled(bool arg1)
+void MainWindow::on_actionDir_toggled(bool checked)
 {
-    qDebug() << "文件夹:" << arg1;
-    if(arg1)
+    qDebug() << "文件夹:" << checked;
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -279,9 +300,9 @@ void MainWindow::on_actionDir_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_actionTxtContentSearch_toggled(bool arg1)
+void MainWindow::on_actionTxtContentSearch_toggled(bool checked)
 {
-    if(arg1)
+    if(checked)
     {
         ui->actionAll->setChecked(false);
         ui->actionMusic->setChecked(false);
@@ -320,9 +341,9 @@ void MainWindow::on_actionQuit_triggered()
     qApp->quit();
 }
 
-void MainWindow::on_actionFixTop_toggled(bool arg1)
+void MainWindow::on_actionFixTop_toggled(bool checked)
 {
-    if(arg1)
+    if(checked)
     {
         Qt::WindowFlags m_flags = windowFlags();
         setWindowFlags(m_flags | Qt::WindowStaysOnTopHint);
@@ -334,3 +355,84 @@ void MainWindow::on_actionFixTop_toggled(bool arg1)
         show();
     }
 }
+
+void MainWindow::on_actionDetail_toggled(bool checked)
+{
+    if(checked)
+    {
+        this->ui->actionSuperBigIcon->setChecked(false);
+        this->ui->actionMidIcon->setChecked(false);
+        this->ui->actionBigIcon->setChecked(false);
+        this->ui->listWidget->setViewMode(QListWidget::ListMode);
+        this->ui->listWidget->setFlow(QListWidget::TopToBottom);
+    }
+    else
+    {
+
+    }
+}
+
+
+void MainWindow::on_actionMidIcon_toggled(bool checked)
+{
+    if(checked)
+    {
+        this->ui->actionSuperBigIcon->setChecked(false);
+        this->ui->actionBigIcon->setChecked(false);
+        this->ui->actionDetail->setChecked(false);
+        this->ui->listWidget->setViewMode(QListWidget::IconMode);
+//        this->ui->listWidget->setIconSize(QSize(100, 100));
+//        this->ui->listWidget->setSpacing(10);
+//        this->ui->listWidget->setResizeMode(QListWidget::Adjust);
+//        this->ui->listWidget->setMovement(QListWidget::Static);
+        this->ui->listWidget->setFlow(QListWidget::LeftToRight);
+    }
+    else
+    {
+
+    }
+}
+
+
+void MainWindow::on_actionBigIcon_toggled(bool checked)
+{
+    if(checked)
+    {
+        this->ui->actionSuperBigIcon->setChecked(false);
+        this->ui->actionMidIcon->setChecked(false);
+        this->ui->actionDetail->setChecked(false);
+        this->ui->listWidget->setViewMode(QListWidget::IconMode);
+//        this->ui->listWidget->setIconSize(QSize(256, 256));
+//        this->ui->listWidget->setSpacing(10);
+//        this->ui->listWidget->setResizeMode(QListWidget::Adjust);
+//        this->ui->listWidget->setMovement(QListWidget::Static);
+        this->ui->listWidget->setFlow(QListWidget::LeftToRight);
+    }
+    else
+    {
+
+    }
+}
+
+
+void MainWindow::on_actionSuperBigIcon_toggled(bool checked)
+{
+    if(checked)
+    {
+        this->ui->actionBigIcon->setChecked(false);
+        this->ui->actionMidIcon->setChecked(false);
+        this->ui->actionDetail->setChecked(false);
+        this->ui->listWidget->setViewMode(QListWidget::IconMode);
+//        this->ui->listWidget->setIconSize(QSize(512, 512));
+//        this->ui->listWidget->setSpacing(10);
+//        this->ui->listWidget->setResizeMode(QListWidget::Adjust);
+//        this->ui->listWidget->setMovement(QListWidget::Static);
+        this->ui->listWidget->setFlow(QListWidget::LeftToRight);
+
+    }
+    else
+    {
+
+    }
+}
+

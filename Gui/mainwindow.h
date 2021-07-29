@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QList>
 #include <QTimer>
+#include <QListWidgetItem>
 #include "datacenter.h"
 
 QT_BEGIN_NAMESPACE
@@ -26,6 +27,8 @@ private slots:
     void onSearchFinished();
 
     void onScanDiskFinished();
+
+    void onListWidgetItemClicked(QListWidgetItem*);
 
     void on_filterCBox_currentIndexChanged(int index);
 
@@ -54,6 +57,14 @@ private slots:
     void on_actionQuit_triggered();
 
     void on_actionFixTop_toggled(bool arg1);
+
+    void on_actionDetail_toggled(bool arg1);
+
+    void on_actionMidIcon_toggled(bool arg1);
+
+    void on_actionBigIcon_toggled(bool arg1);
+
+    void on_actionSuperBigIcon_toggled(bool arg1);
 
 public:
 

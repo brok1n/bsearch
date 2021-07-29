@@ -68,6 +68,8 @@ struct Node {
     int _fileType = -1;
     //文件大小 64位
     qint64 _fileSize = 0;
+    //完整路径
+    QString _fullPath = "";
 
 
     static Node* create(QString name="", Node *parent=nullptr, bool isdir=false, int file_type=-1, QString ext="")
@@ -112,7 +114,11 @@ struct Node {
     //完整路径
     QString fullPath()
     {
-        return eachParent(this).replace("//", "/");
+        if(_fullPath.isEmpty())
+        {
+            _fullPath = eachParent(this).replace("//", "/");
+        }
+        return _fullPath;
     }
 
     //遍历父节点

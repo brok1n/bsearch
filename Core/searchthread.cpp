@@ -37,22 +37,22 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
     for(int i = 0; i < node->childs.size(); i ++)
     {
         Node *n = node->childs.at(i);
-        if(n->name.contains(mKey))
+        if(n->fileExt().contains(mKey) || n->name.contains(mKey))
         {
-//            qDebug() << n->name << " : " << n->fileExt() << " : " << n->fileType() << " : " << mFileType;
             if(mFileType == FILE_TYPE::FILE_ALL || mFileType == n->fileType())
             {
                 resultList->append(n);
             }
-//            qDebug() << n->fullPath();
-//            mResultCallback(n);
-//            DataCenter::GetInstance()->resultList()->append(n);
         }
         if(!mRunning)
         {
-            return;
+            break;
         }
         eachNode(n, resultList, level+1);
+        if(!mRunning)
+        {
+            break;
+        }
     }
 }
 

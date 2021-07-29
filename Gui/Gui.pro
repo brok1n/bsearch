@@ -2,6 +2,14 @@ QT       += core gui
 include(../Core/Core.pri)
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+# -- 调试 --
+QMAKE_CFLAGS_RELEASE += -g
+QMAKE_CXXFLAGS_RELEASE += -g
+QMAKE_CFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_LFLAGS_RELEASE = -mthreads -W
+# -- 调试 --
+
 CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -9,12 +17,14 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ccrashstack.cpp \
     main.cpp \
     mainwindow.cpp \
     resultlistitem.cpp \
     threadpooltest.cpp
 
 HEADERS += \
+    ccrashstack.h \
     mainwindow.h \
     resultlistitem.h \
     threadpooltest.h
