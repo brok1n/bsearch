@@ -74,6 +74,10 @@ private slots:
 
     void on_actionOpenFile_triggered();
 
+    void on_actionCopyTo_triggered();
+
+    void on_actionMoveTo_triggered();
+
 public:
 
     void flushResult();

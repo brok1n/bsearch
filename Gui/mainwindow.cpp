@@ -14,6 +14,9 @@
 #include <QFileInfo>
 #include <QUrl>
 #include <QDesktopServices>
+#include <QClipboard>
+#include <QMimeData>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -439,3 +442,44 @@ void MainWindow::on_actionOpenFile_triggered()
     QUrl _url = QUrl::fromLocalFile(filePath);
     QDesktopServices::openUrl(_url);
 }
+
+
+void MainWindow::on_actionCopyTo_triggered()
+{
+    QList<QListWidgetItem*> items = this->ui->listWidget->selectedItems();
+    if(items.isEmpty())
+    {
+        qDebug() << "没有选择文件!";
+    }
+    QListWidgetItem *item = items.at(0);
+
+    QString filePath = item->data(Qt::UserRole).toString();
+
+    qDebug() << "copy to file:" << filePath;
+
+    QString dirPath = QFileDialog::getExistingDirectory(this, "复制到", "./", QFileDialog::ShowDirsOnly);
+    qDebug() << "复制到:" << dirPath;
+
+
+
+}
+
+
+void MainWindow::on_actionMoveTo_triggered()
+{
+    QList<QListWidgetItem*> items = this->ui->listWidget->selectedItems();
+    if(items.isEmpty())
+    {
+        qDebug() << "没有选择文件!";
+    }
+    QListWidgetItem *item = items.at(0);
+
+    QString filePath = item->data(Qt::UserRole).toString();
+
+    qDebug() << "move to file:" << filePath;
+
+    QString dirPath = QFileDialog::getExistingDirectory(this, "移动到", "./", QFileDialog::ShowDirsOnly);
+    qDebug() << "移动到:" << dirPath;
+
+}
+

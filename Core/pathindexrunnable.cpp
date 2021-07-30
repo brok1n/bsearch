@@ -65,6 +65,11 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
         QFileInfo f = fileList.at(i);
         Node *node = Node::create(f.fileName(), parent);
         node->setFileSize(f.size());
+        if(DataCenter::GetInstance()->singleThreadCount() != mThreadPool->maxThreadCount())
+        {
+            mThreadPool->setMaxThreadCount(DataCenter::GetInstance()->singleThreadCount());
+            qDebug() << "maxThreadCount change to " << DataCenter::GetInstance()->singleThreadCount();
+        }
         if(f.isDir())
         {
             node->isDir = true;
@@ -78,11 +83,6 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
             if(DataCenter::GetInstance()->scanFinishedCount() >= DataCenter::GetInstance()->partitionCount() / 2)
             {
                 level = 7;
-            }
-            if(DataCenter::GetInstance()->singleThreadCount() != mThreadPool->maxThreadCount())
-            {
-                mThreadPool->setMaxThreadCount(DataCenter::GetInstance()->singleThreadCount());
-                qDebug() << "maxThreadCount change to " << DataCenter::GetInstance()->singleThreadCount();
             }
             if(mLevel < level)
             {

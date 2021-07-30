@@ -1,6 +1,8 @@
 #ifndef CCRASHSTACK_H
 #define CCRASHSTACK_H
 
+#ifdef _WIN32
+
 #include <windows.h>
 #include <QString>
 
@@ -20,5 +22,7 @@ public:
 
     QString GetExceptionInfo();
 };
+
+#endif
 
 #endif // CCRASHSTACK_H

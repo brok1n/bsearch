@@ -36,6 +36,10 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
     }
     for(int i = 0; i < node->childs.size(); i ++)
     {
+        if(!mRunning)
+        {
+            break;
+        }
         Node *n = node->childs.at(i);
         if(n->fileExt().contains(mKey) || n->name.contains(mKey))
         {
@@ -44,14 +48,9 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
                 resultList->append(n);
             }
         }
-        if(!mRunning)
+        if(!n->childs.isEmpty())
         {
-            break;
-        }
-        eachNode(n, resultList, level+1);
-        if(!mRunning)
-        {
-            break;
+            eachNode(n, resultList, level+1);
         }
     }
 }

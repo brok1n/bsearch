@@ -1,4 +1,7 @@
 #include "ccrashstack.h"
+
+#ifdef _WIN32
+
 #include <tlhelp32.h>
 #include <stdio.h>
 
@@ -205,3 +208,5 @@ QString CCrashStack::GetExceptionInfo()
 
         return sRet;
 }
+
+#endif

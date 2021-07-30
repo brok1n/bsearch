@@ -3,6 +3,8 @@
 
 #include <QApplication>
 
+#ifdef _WIN32
+
 #include "ccrashstack.h"
 
 long __stdcall   callback(_EXCEPTION_POINTERS*   excp)
@@ -37,11 +39,14 @@ long __stdcall   callback(_EXCEPTION_POINTERS*   excp)
     return   EXCEPTION_EXECUTE_HANDLER;
 }
 
+#endif
 
 int main(int argc, char *argv[])
 {
+#ifdef _WIN32
     //用来做崩溃日志收集及调试
     SetUnhandledExceptionFilter(callback);
+#endif
 
     QApplication a(argc, argv);
     MainWindow w;

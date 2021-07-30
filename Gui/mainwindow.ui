@@ -121,10 +121,6 @@
     <property name="title">
      <string>编辑</string>
     </property>
-    <addaction name="actionCut"/>
-    <addaction name="actionCopy"/>
-    <addaction name="actionPaste"/>
-    <addaction name="separator"/>
     <addaction name="actionCopyTo"/>
     <addaction name="actionMoveTo"/>
     <addaction name="separator"/>
@@ -190,47 +186,9 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionCut">
-   <property name="text">
-    <string>剪切</string>
-   </property>
-  </action>
-  <action name="actionCopy">
-   <property name="text">
-    <string>复制</string>
-   </property>
-  </action>
-  <action name="actionPaste">
-   <property name="text">
-    <string>粘贴</string>
-   </property>
-  </action>
-  <action name="actionFilter">
-   <property name="text">
-    <string>过滤器</string>
-   </property>
-  </action>
-  <action name="actionPreview">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>预览</string>
-   </property>
-  </action>
   <action name="actionCreateWindow">
    <property name="text">
     <string>创建新搜索窗口</string>
-   </property>
-  </action>
-  <action name="actionOpenResultFile">
-   <property name="text">
-    <string>打开结果文件</string>
-   </property>
-  </action>
-  <action name="actionExportResult">
-   <property name="text">
-    <string>导出搜索结果</string>
    </property>
   </action>
   <action name="actionClose">
