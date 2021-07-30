@@ -58,13 +58,21 @@ private slots:
 
     void on_actionFixTop_toggled(bool arg1);
 
-    void on_actionDetail_toggled(bool arg1);
+    void on_actionSelectAll_triggered();
 
-    void on_actionMidIcon_toggled(bool arg1);
+    void on_actionReverseSelect_triggered();
 
-    void on_actionBigIcon_toggled(bool arg1);
+    void on_actionDefaultSize_triggered();
 
-    void on_actionSuperBigIcon_toggled(bool arg1);
+    void on_actionMidSize_triggered();
+
+    void on_actionBigSize_triggered();
+
+    void on_actionFlush_triggered();
+
+    void on_actionOpenInFolder_triggered();
+
+    void on_actionOpenFile_triggered();
 
 public:
 
@@ -77,6 +85,7 @@ private:
     QTimer *mWaitResultTimer;
     QTimer *mWaitScanDiskTimer;
     qint64 mPanelId;
+    QSize mDefaultIconSize;
 
 };
 #endif // MAINWINDOW_H

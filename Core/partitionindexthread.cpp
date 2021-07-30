@@ -33,7 +33,8 @@ void PartitionIndexThread::run()
     {
         return;
     }
-    dir.setFilter(QDir::Readable|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
+//    dir.setFilter(QDir::Readable|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
+    dir.setFilter(QDir::NoDotAndDotDot|QDir::AllEntries);
     dir.setSorting(QDir::DirsLast);
     QFileInfoList fileList = dir.entryInfoList();
 
@@ -159,7 +160,7 @@ void PartitionIndexThread::stop()
 bool PartitionIndexThread::isWinSystemPartition(QString path)
 {
     QDir dir(path);
-    dir.setFilter(QDir::Readable|QDir::Dirs|QDir::NoDot|QDir::NoDotAndDotDot);
+    dir.setFilter(QDir::NoDotAndDotDot|QDir::AllEntries);
     dir.setSorting(QDir::DirsFirst);
     QFileInfoList fileList = dir.entryInfoList();
     int status = 0;

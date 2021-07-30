@@ -51,7 +51,8 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
     }
 //    qDebug() << "PathIndexThread each:" << info.filePath();
     QDir dir(info.filePath());
-    dir.setFilter(QDir::Readable|QDir::Hidden|QDir::Files|QDir::NoSymLinks|QDir::Dirs|QDir::NoDotAndDotDot);
+//    dir.setFilter(QDir::Readable|QDir::Hidden|QDir::Files|QDir::NoSymLinks|QDir::Dirs|QDir::NoDotAndDotDot);
+    dir.setFilter(QDir::NoDotAndDotDot|QDir::AllEntries);
     dir.setSorting(QDir::DirsLast);
     QFileInfoList fileList = dir.entryInfoList();
     for(int i = 0; i < fileList.size(); i ++)
@@ -81,6 +82,7 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
             if(DataCenter::GetInstance()->singleThreadCount() != mThreadPool->maxThreadCount())
             {
                 mThreadPool->setMaxThreadCount(DataCenter::GetInstance()->singleThreadCount());
+                qDebug() << "maxThreadCount change to " << DataCenter::GetInstance()->singleThreadCount();
             }
             if(mLevel < level)
             {

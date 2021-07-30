@@ -12,6 +12,8 @@
 #include <QScreen>
 #include <QFileIconProvider>
 #include <QFileInfo>
+#include <QUrl>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,9 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
     , mWaitResultTimer(new QTimer())
     , mWaitScanDiskTimer(new QTimer())
 {
-    ui->setupUi(this);
+    this->ui->setupUi(this);
 
-    this->ui->listWidget->setIconSize(QSize(24, 24));
+    mDefaultIconSize = this->ui->listWidget->iconSize();
+
+//    this->ui->listWidget->setIconSize(QSize(24, 24));
     connect(this->ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onListWidgetItemClicked(QListWidgetItem*)));
 
     //如果窗口数量 > 0
@@ -48,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mWaitScanDiskTimer, SIGNAL(timeout()), this, SLOT(onScanDiskFinished()));
     mWaitScanDiskTimer->start(1000);
 
-    ui->statusbar->showMessage("正在扫描磁盘...");
+    this->ui->statusbar->showMessage("正在扫描磁盘...");
 //    ThreadPoolTest *test = new ThreadPoolTest;
 //    test->start();
 }
@@ -87,58 +91,60 @@ void MainWindow::onScanDiskFinished()
     {
         disconnect(mWaitScanDiskTimer, SIGNAL(timeout()), this, SLOT(onScanDiskFinished()));
         mWaitScanDiskTimer->stop();
-        ui->statusbar->showMessage("磁盘扫描完毕!");
+        this->ui->statusbar->showMessage("磁盘扫描完毕!");
     }
 }
 
 void MainWindow::onListWidgetItemClicked(QListWidgetItem *item)
 {
     QString txt = item->text();
-    QString fullPath = item->data(1).toString();
+    QString fullPath = item->data(Qt::UserRole).toString();
     qDebug() << "点击了：" << txt << " fullPath:" << fullPath;
 }
 
 void MainWindow::flushResult()
 {
     QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
-    ui->listWidget->clear();
+    this->ui->listWidget->clear();
     for(int i = 0; i < resultList->size(); i ++)
     {
-        QListWidgetItem *item=new QListWidgetItem(ui->listWidget);
-        //设置列表项的文本
-//        item->setText(QString("%1 (%2)").arg(resultList->at(i)->fullPath()).arg(Common::formatFileSize(resultList->at(i)->fileSize())));
+        QListWidgetItem *item=new QListWidgetItem(this->ui->listWidget);
         QString fullPath = resultList->at(i)->fullPath();
         item->setText(QString("%1").arg(resultList->at(i)->name));
+
         QFileInfo fileInfo(fullPath);
         QFileIconProvider fileIcon;
         QIcon icon = fileIcon.icon(fileInfo);
-        item->setData(1, fullPath);
-        item->setIcon(icon);
 
-        //加载列表项到列表框
-        ui->listWidget->addItem(item);
+
+        item->setIcon(icon);
+        item->setData(Qt::UserRole, fullPath);
+
+        this->ui->listWidget->addItem(item);
     }
-    ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
+   this-> ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
 }
 
 void MainWindow::startSearch()
 {
 //    ui->listWidget->clear();
-    QString key = ui->keyEdit->text();
+    QString key = this->ui->keyEdit->text();
     if(key.isEmpty())
     {
         qDebug() << "搜索关键字为空！不执行搜索。";
-        ui->statusbar->showMessage("搜索关键字为空！不执行搜索。");
+        this->ui->statusbar->showMessage("搜索关键字为空！不执行搜索。");
         return;
     }
 
-    int fileType = ui->filterCBox->currentIndex();
+    int fileType = this->ui->filterCBox->currentIndex();
     qDebug() << "开始搜索:" << key << "   " << FILE_TYPE_NAME[fileType];
 
-    if(ui->contentSearchCbox->isChecked())
+    if(this->ui->contentSearchCbox->isChecked())
     {
         qDebug() << "内容搜索，需要特殊处理，功能暂未实现。";
-        ui->statusbar->showMessage("内容搜索，需要特殊处理，功能暂未实现。");
+        this->ui->statusbar->showMessage("内容搜索，需要特殊处理，功能暂未实现。");
+        this->ui->contentSearchCbox->setChecked(false);
+        this->ui->actionTxtContentSearch->setChecked(false);
         return;
     }
 
@@ -151,7 +157,7 @@ void MainWindow::startSearch()
 
 void MainWindow::on_filterCBox_currentIndexChanged(int index)
 {
-    QString filterTxt = ui->filterCBox->itemText(index);
+    QString filterTxt = this->ui->filterCBox->itemText(index);
     qDebug() << "用户选择了:" << filterTxt;
     startSearch();
 }
@@ -161,14 +167,14 @@ void MainWindow::on_actionAll_toggled(bool checked)
     qDebug() << "所有:" << checked;
     if(checked)
     {
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(0);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(0);
 
         startSearch();
     }
@@ -179,14 +185,14 @@ void MainWindow::on_actionMusic_toggled(bool checked)
     qDebug() << "音乐:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(1);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(1);
 
         startSearch();
     }
@@ -197,14 +203,14 @@ void MainWindow::on_actionVideo_toggled(bool checked)
     qDebug() << "视频:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(2);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(2);
 
         startSearch();
     }
@@ -215,14 +221,14 @@ void MainWindow::on_actionPicture_toggled(bool checked)
     qDebug() << "图片:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(3);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(3);
 
         startSearch();
     }
@@ -233,14 +239,14 @@ void MainWindow::on_actionDocument_toggled(bool checked)
     qDebug() << "文档:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(4);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(4);
 
         startSearch();
     }
@@ -251,14 +257,14 @@ void MainWindow::on_actionCompress_toggled(bool checked)
     qDebug() << "压缩包:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(5);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(5);
 
         startSearch();
     }
@@ -269,14 +275,14 @@ void MainWindow::on_actionExecutable_toggled(bool checked)
     qDebug() << "可执行:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->filterCBox->setCurrentIndex(6);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(6);
 
         startSearch();
     }
@@ -287,14 +293,14 @@ void MainWindow::on_actionDir_toggled(bool checked)
     qDebug() << "文件夹:" << checked;
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->filterCBox->setCurrentIndex(7);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->filterCBox->setCurrentIndex(7);
 
         startSearch();
     }
@@ -304,16 +310,16 @@ void MainWindow::on_actionTxtContentSearch_toggled(bool checked)
 {
     if(checked)
     {
-        ui->actionAll->setChecked(false);
-        ui->actionMusic->setChecked(false);
-        ui->actionVideo->setChecked(false);
-        ui->actionPicture->setChecked(false);
-        ui->actionDocument->setChecked(false);
-        ui->actionCompress->setChecked(false);
-        ui->actionExecutable->setChecked(false);
-        ui->actionDir->setChecked(false);
-        ui->contentSearchCbox->setChecked(true);
-        ui->filterCBox->setCurrentIndex(4);
+        this->ui->actionAll->setChecked(false);
+        this->ui->actionMusic->setChecked(false);
+        this->ui->actionVideo->setChecked(false);
+        this->ui->actionPicture->setChecked(false);
+        this->ui->actionDocument->setChecked(false);
+        this->ui->actionCompress->setChecked(false);
+        this->ui->actionExecutable->setChecked(false);
+        this->ui->actionDir->setChecked(false);
+        this->ui->contentSearchCbox->setChecked(true);
+        this->ui->filterCBox->setCurrentIndex(4);
 
         startSearch();
     }
@@ -356,83 +362,80 @@ void MainWindow::on_actionFixTop_toggled(bool checked)
     }
 }
 
-void MainWindow::on_actionDetail_toggled(bool checked)
+void MainWindow::on_actionSelectAll_triggered()
 {
-    if(checked)
-    {
-        this->ui->actionSuperBigIcon->setChecked(false);
-        this->ui->actionMidIcon->setChecked(false);
-        this->ui->actionBigIcon->setChecked(false);
-        this->ui->listWidget->setViewMode(QListWidget::ListMode);
-        this->ui->listWidget->setFlow(QListWidget::TopToBottom);
-    }
-    else
-    {
+    this->ui->listWidget->selectAll();
+}
 
+void MainWindow::on_actionReverseSelect_triggered()
+{
+    for(int i = 0; i < this->ui->listWidget->count(); i ++)
+    {
+        QListWidgetItem *item = this->ui->listWidget->item(i);
+        item->setSelected(!item->isSelected());
     }
 }
 
-
-void MainWindow::on_actionMidIcon_toggled(bool checked)
+void MainWindow::on_actionDefaultSize_triggered()
 {
-    if(checked)
-    {
-        this->ui->actionSuperBigIcon->setChecked(false);
-        this->ui->actionBigIcon->setChecked(false);
-        this->ui->actionDetail->setChecked(false);
-        this->ui->listWidget->setViewMode(QListWidget::IconMode);
-//        this->ui->listWidget->setIconSize(QSize(100, 100));
-//        this->ui->listWidget->setSpacing(10);
-//        this->ui->listWidget->setResizeMode(QListWidget::Adjust);
-//        this->ui->listWidget->setMovement(QListWidget::Static);
-        this->ui->listWidget->setFlow(QListWidget::LeftToRight);
-    }
-    else
-    {
+    this->ui->actionDefaultSize->setChecked(true);
+    this->ui->actionMidSize->setChecked(false);
+    this->ui->actionBigSize->setChecked(false);
+    this->ui->listWidget->setIconSize(mDefaultIconSize);
+}
 
-    }
+void MainWindow::on_actionMidSize_triggered()
+{
+    this->ui->actionDefaultSize->setChecked(false);
+    this->ui->actionMidSize->setChecked(true);
+    this->ui->actionBigSize->setChecked(false);
+    this->ui->listWidget->setIconSize(QSize(22, 22));
+}
+
+void MainWindow::on_actionBigSize_triggered()
+{
+    this->ui->actionDefaultSize->setChecked(false);
+    this->ui->actionMidSize->setChecked(false);
+    this->ui->actionBigSize->setChecked(true);
+    this->ui->listWidget->setIconSize(QSize(32, 32));
+}
+
+void MainWindow::on_actionFlush_triggered()
+{
+    //刷新
+    flushResult();
 }
 
 
-void MainWindow::on_actionBigIcon_toggled(bool checked)
+void MainWindow::on_actionOpenInFolder_triggered()
 {
-    if(checked)
+    QList<QListWidgetItem*> items = this->ui->listWidget->selectedItems();
+    if(items.isEmpty())
     {
-        this->ui->actionSuperBigIcon->setChecked(false);
-        this->ui->actionMidIcon->setChecked(false);
-        this->ui->actionDetail->setChecked(false);
-        this->ui->listWidget->setViewMode(QListWidget::IconMode);
-//        this->ui->listWidget->setIconSize(QSize(256, 256));
-//        this->ui->listWidget->setSpacing(10);
-//        this->ui->listWidget->setResizeMode(QListWidget::Adjust);
-//        this->ui->listWidget->setMovement(QListWidget::Static);
-        this->ui->listWidget->setFlow(QListWidget::LeftToRight);
+        qDebug() << "没有选择文件!";
     }
-    else
-    {
+    QListWidgetItem *item = items.at(0);
 
-    }
+    QString filePath = item->data(Qt::UserRole).toString();
+
+    qDebug() << "select file:" << filePath;
+    QFileInfo fileInfo(filePath);
+
+    QUrl _url = QUrl::fromLocalFile(fileInfo.absolutePath());
+    QDesktopServices::openUrl(_url);
 }
 
-
-void MainWindow::on_actionSuperBigIcon_toggled(bool checked)
+void MainWindow::on_actionOpenFile_triggered()
 {
-    if(checked)
+    QList<QListWidgetItem*> items = this->ui->listWidget->selectedItems();
+    if(items.isEmpty())
     {
-        this->ui->actionBigIcon->setChecked(false);
-        this->ui->actionMidIcon->setChecked(false);
-        this->ui->actionDetail->setChecked(false);
-        this->ui->listWidget->setViewMode(QListWidget::IconMode);
-//        this->ui->listWidget->setIconSize(QSize(512, 512));
-//        this->ui->listWidget->setSpacing(10);
-//        this->ui->listWidget->setResizeMode(QListWidget::Adjust);
-//        this->ui->listWidget->setMovement(QListWidget::Static);
-        this->ui->listWidget->setFlow(QListWidget::LeftToRight);
-
+        qDebug() << "没有选择文件!";
     }
-    else
-    {
+    QListWidgetItem *item = items.at(0);
 
-    }
+    QString filePath = item->data(Qt::UserRole).toString();
+
+    QUrl _url = QUrl::fromLocalFile(filePath);
+    QDesktopServices::openUrl(_url);
 }
-

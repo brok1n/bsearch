@@ -17,7 +17,7 @@ long __stdcall   callback(_EXCEPTION_POINTERS*   excp)
     QString file_path = dir.currentPath();
 
     QDir *folder_path = new QDir;
-    bool exist = folder_path->exists(file_path.append("\\MyApp"));
+    bool exist = folder_path->exists(file_path.append("/MyApp"));
     if(!exist)
     {
         folder_path->mkdir(file_path);
@@ -25,7 +25,7 @@ long __stdcall   callback(_EXCEPTION_POINTERS*   excp)
     delete folder_path;
     folder_path = nullptr;
 
-    QString sFileName = file_path + "\\crash.log";
+    QString sFileName = file_path + "/crash.log";
 
     QFile file(sFileName);
     if (file.open(QIODevice::WriteOnly|QIODevice::Truncate))

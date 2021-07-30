@@ -75,7 +75,15 @@ int DataCenter::scanFinishedCount()
 void DataCenter::setScanFinishedCount(int count)
 {
     mScanFinishedCount = count;
-    mSingleThreadCount = MAX_THREAD_COUNT / (mPartitionCount - count);
+    int tmpPartitionCount = mPartitionCount - count;
+    if(tmpPartitionCount <= 0)
+    {
+        mSingleThreadCount = MAX_THREAD_COUNT;
+    }
+    else
+    {
+        mSingleThreadCount = MAX_THREAD_COUNT / tmpPartitionCount;
+    }
 }
 
 int DataCenter::singleThreadCount()

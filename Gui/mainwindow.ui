@@ -130,16 +130,18 @@
     <addaction name="separator"/>
     <addaction name="actionSelectAll"/>
     <addaction name="actionReverseSelect"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenInFolder"/>
+    <addaction name="actionOpenFile"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>视图</string>
     </property>
     <addaction name="separator"/>
-    <addaction name="actionSuperBigIcon"/>
-    <addaction name="actionBigIcon"/>
-    <addaction name="actionMidIcon"/>
-    <addaction name="actionDetail"/>
+    <addaction name="actionDefaultSize"/>
+    <addaction name="actionMidSize"/>
+    <addaction name="actionBigSize"/>
     <addaction name="separator"/>
     <addaction name="actionSortBy"/>
     <addaction name="actionFlush"/>
@@ -151,14 +153,12 @@
      <string>搜索</string>
     </property>
     <addaction name="actionMatchCase"/>
-    <addaction name="actionFullContentMatch"/>
-    <addaction name="actionMatchPath"/>
-    <addaction name="actionUseRegex"/>
     <addaction name="separator"/>
     <addaction name="actionCreateFilter"/>
     <addaction name="actionManagerFilter"/>
     <addaction name="separator"/>
     <addaction name="actionTxtContentSearch"/>
+    <addaction name="separator"/>
     <addaction name="actionAll"/>
     <addaction name="actionMusic"/>
     <addaction name="actionVideo"/>
@@ -263,31 +263,7 @@
     <string>反选</string>
    </property>
   </action>
-  <action name="actionSuperBigIcon">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>超大图标</string>
-   </property>
-  </action>
-  <action name="actionBigIcon">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>大图标</string>
-   </property>
-  </action>
-  <action name="actionMidIcon">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>中等图标</string>
-   </property>
-  </action>
-  <action name="actionDetail">
+  <action name="actionDefaultSize">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -295,7 +271,23 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>详情</string>
+    <string>默认</string>
+   </property>
+  </action>
+  <action name="actionMidSize">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>中等</string>
+   </property>
+  </action>
+  <action name="actionBigSize">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>较大</string>
    </property>
   </action>
   <action name="actionSortBy">
@@ -322,30 +314,6 @@
    </property>
    <property name="text">
     <string>区分大小写</string>
-   </property>
-  </action>
-  <action name="actionFullContentMatch">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>全字匹配</string>
-   </property>
-  </action>
-  <action name="actionMatchPath">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>匹配路径</string>
-   </property>
-  </action>
-  <action name="actionUseRegex">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>使用正则表达式</string>
    </property>
   </action>
   <action name="actionCreateFilter">
@@ -485,6 +453,16 @@
    </property>
    <property name="text">
     <string>文本内容搜索</string>
+   </property>
+  </action>
+  <action name="actionOpenInFolder">
+   <property name="text">
+    <string>打开所在目录</string>
+   </property>
+  </action>
+  <action name="actionOpenFile">
+   <property name="text">
+    <string>打开文件</string>
    </property>
   </action>
  </widget>
