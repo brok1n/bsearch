@@ -1,4 +1,8 @@
 <RCC>
-    <qresource prefix="/img"/>
+    <qresource prefix="/img">
+        <file>back.png</file>
+        <file>ok.png</file>
+        <file>diff.png</file>
+    </qresource>
     <qresource prefix="/style"/>
 </RCC>
