@@ -121,6 +121,7 @@
     <property name="title">
      <string>编辑</string>
     </property>
+    <addaction name="actionCopyToDesktop"/>
     <addaction name="actionCopyTo"/>
     <addaction name="actionMoveTo"/>
     <addaction name="separator"/>
@@ -421,6 +422,11 @@
   <action name="actionOpenFile">
    <property name="text">
     <string>打开文件</string>
+   </property>
+  </action>
+  <action name="actionCopyToDesktop">
+   <property name="text">
+    <string>复制到桌面</string>
    </property>
   </action>
  </widget>

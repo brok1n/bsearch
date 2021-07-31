@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "core.h"
 #include "threadpooltest.h"
+#include "copymovefiledialog.h"
 #include <QApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -17,6 +18,7 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QFileDialog>
+#include <QStandardPaths>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -56,6 +58,21 @@ MainWindow::MainWindow(QWidget *parent)
     mWaitScanDiskTimer->start(1000);
 
     this->ui->statusbar->showMessage("正在扫描磁盘...");
+
+    QString desktopFileName = QApplication::desktopFileName();
+    qDebug() << "desktopFileName:" << desktopFileName;
+
+    QString applicationDisplayName = QApplication::applicationDisplayName();
+    qDebug() << "applicationDisplayName:" << applicationDisplayName;
+
+    QString platformName = QApplication::platformName();
+    qDebug() << "platformName:" << platformName;
+
+
+//    QString desktopFileName = QApplication::desktopFileName();
+//    qDebug() << "desktopFileName:" << desktopFileName;
+
+
 //    ThreadPoolTest *test = new ThreadPoolTest;
 //    test->start();
 }
@@ -461,6 +478,16 @@ void MainWindow::on_actionCopyTo_triggered()
     qDebug() << "复制到:" << dirPath;
 
 
+    QList<QUrl> fileUrls;
+    for (int i = 0; i < items.size(); i ++)
+    {
+        fileUrls.append(QUrl::fromLocalFile(item->data(Qt::UserRole).toString()));
+    }
+    QMimeData *data = new QMimeData();
+    data->setUrls(fileUrls);
+
+    QClipboard *clip = QApplication::clipboard();
+    clip->setMimeData(data);
 
 }
 
@@ -483,3 +510,25 @@ void MainWindow::on_actionMoveTo_triggered()
 
 }
 
+
+void MainWindow::on_actionCopyToDesktop_triggered()
+{
+    QList<QListWidgetItem*> items = this->ui->listWidget->selectedItems();
+    if(items.isEmpty())
+    {
+        qDebug() << "没有选择文件!";
+    }
+
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    qDebug() << "复制到:" << desktopPath;
+
+    QList<QString> files;
+    for (int i = 0; i < items.size(); i ++)
+    {
+        files.append(items.at(i)->data(Qt::UserRole).toString());
+    }
+
+    CopyMoveFileDialog *copyMoveFileDialog = new CopyMoveFileDialog(files, desktopPath, false);
+    copyMoveFileDialog->start();
+
+}

@@ -18,6 +18,7 @@ CONFIG += c++11
 
 SOURCES += \
     ccrashstack.cpp \
+    copymovefiledialog.cpp \
     main.cpp \
     mainwindow.cpp \
     resultlistitem.cpp \
@@ -25,11 +26,13 @@ SOURCES += \
 
 HEADERS += \
     ccrashstack.h \
+    copymovefiledialog.h \
     mainwindow.h \
     resultlistitem.h \
     threadpooltest.h
 
 FORMS += \
+    copymovefiledialog.ui \
     mainwindow.ui \
     resultlistitem.ui
 

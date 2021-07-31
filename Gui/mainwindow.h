@@ -78,6 +78,8 @@ private slots:
 
     void on_actionMoveTo_triggered();
 
+    void on_actionCopyToDesktop_triggered();
+
 public:
 
     void flushResult();
