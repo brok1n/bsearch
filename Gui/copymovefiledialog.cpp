@@ -20,6 +20,7 @@ CopyMoveFileDialog::CopyMoveFileDialog(QList<QString> files, QString targetPath,
     , mFileProcessSize(0)
     , mCurrentFilePath("")
     , mWaitUserSelection(false)
+    , mIgnoreCurrentFile(false)
 {
     ui->setupUi(this);
 
@@ -144,6 +145,12 @@ void CopyMoveFileDialog::startProcess()
         this->ui->remainItemsLabel->setText(QString("%1 (%2)").arg(mFileNumber - i).arg(localFileSize(mFileSumSize - mFileProcessSize)));
         QApplication::processEvents();
 
+        if(!fileInfo.exists())
+        {
+            qDebug() << "源文件不存在！略过";
+            continue;
+        }
+
         //目标
         QFileInfo target(mTargetPath + "/" + fileInfo.fileName());
 
@@ -151,6 +158,7 @@ void CopyMoveFileDialog::startProcess()
         {
             qDebug() << "文件已存在:" << mCurrentFilePath;
             mWaitUserSelection = true;
+            mIgnoreCurrentFile = false;
             this->ui->existsFileNameLabel->setText(fileInfo.fileName());
             flushWindowTitle();
             while (mWaitUserSelection) {
@@ -159,6 +167,12 @@ void CopyMoveFileDialog::startProcess()
             }
             flushWindowTitle();
             this->ui->stackedWidget->setCurrentIndex(0);
+
+            //如果用户选择了忽略该文件，就跳过这个文件的复制，否则 就覆盖写入
+            if(mIgnoreCurrentFile)
+            {
+                continue;
+            }
         }
 
         QFile out(target.absoluteFilePath());
@@ -184,6 +198,12 @@ void CopyMoveFileDialog::startProcess()
         }
         input.close();
         out.close();
+        QApplication::processEvents();
+        if(mIsMove)
+        {
+            QFile currentFile(mCurrentFilePath);
+            currentFile.remove();
+        }
         QApplication::processEvents();
     }
     this->ui->progressBar->setValue(100);
@@ -231,12 +251,6 @@ void CopyMoveFileDialog::on_replaceBtn_clicked()
 
 void CopyMoveFileDialog::on_ignoreBtn_clicked()
 {
-
+    mWaitUserSelection = false;
+    mIgnoreCurrentFile = true;
 }
-
-
-void CopyMoveFileDialog::on_diffBtn_clicked()
-{
-
-}
-

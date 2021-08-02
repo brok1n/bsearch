@@ -19,6 +19,7 @@
 #include <QMimeData>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -477,17 +478,29 @@ void MainWindow::on_actionCopyTo_triggered()
     QString dirPath = QFileDialog::getExistingDirectory(this, "复制到", "./", QFileDialog::ShowDirsOnly);
     qDebug() << "复制到:" << dirPath;
 
+    QFileInfo dirPathInfo(dirPath);
+    if(dirPath.isEmpty())
+    {
+        qDebug() << "用户取消了.";
+        return;
+    }
+    if(!dirPathInfo.exists())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("目标文件夹不存在!");
+        msgBox.exec();
+        return;
+    }
 
-    QList<QUrl> fileUrls;
+    QList<QString> files;
     for (int i = 0; i < items.size(); i ++)
     {
-        fileUrls.append(QUrl::fromLocalFile(item->data(Qt::UserRole).toString()));
+        files.append(items.at(i)->data(Qt::UserRole).toString());
     }
-    QMimeData *data = new QMimeData();
-    data->setUrls(fileUrls);
 
-    QClipboard *clip = QApplication::clipboard();
-    clip->setMimeData(data);
+    CopyMoveFileDialog *copyMoveFileDialog = new CopyMoveFileDialog(files, dirPath, false);
+    copyMoveFileDialog->start();
+
 
 }
 
@@ -507,6 +520,29 @@ void MainWindow::on_actionMoveTo_triggered()
 
     QString dirPath = QFileDialog::getExistingDirectory(this, "移动到", "./", QFileDialog::ShowDirsOnly);
     qDebug() << "移动到:" << dirPath;
+
+    QFileInfo dirPathInfo(dirPath);
+    if(dirPath.isEmpty())
+    {
+        qDebug() << "用户取消了.";
+        return;
+    }
+    if(!dirPathInfo.exists())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("目标文件夹不存在!");
+        msgBox.exec();
+        return;
+    }
+
+    QList<QString> files;
+    for (int i = 0; i < items.size(); i ++)
+    {
+        files.append(items.at(i)->data(Qt::UserRole).toString());
+    }
+
+    CopyMoveFileDialog *copyMoveFileDialog = new CopyMoveFileDialog(files, dirPath, true);
+    copyMoveFileDialog->start();
 
 }
 

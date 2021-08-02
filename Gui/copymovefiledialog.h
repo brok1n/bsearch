@@ -50,8 +50,6 @@ private slots:
 
     void on_ignoreBtn_clicked();
 
-    void on_diffBtn_clicked();
-
 private:
     Ui::CopyMoveFileDialog *ui;
     QList<QString> mFiles;  //所有要处理的文件列表
@@ -62,6 +60,7 @@ private:
     quint64 mFileProcessSize; //已处理大小
     QString mCurrentFilePath;   //当前在处理的文件路径
     bool mWaitUserSelection;    //是否等待用户选择
+    bool mIgnoreCurrentFile;    //是否忽略当前文件
 };
 
 #endif // COPYMOVEFILEDIALOG_H
