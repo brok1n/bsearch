@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QStringList>
+#include <QFileInfo>
 
 //文件大小等级
 const qint64 FILE_SIZE_TB = 1024 * 1024 * 1024 * (qint64)1024;
@@ -70,6 +71,12 @@ struct Node {
     qint64 _fileSize = 0;
     //完整路径
     QString _fullPath = "";
+    //创建时间
+    qint64 createTime = 0;
+    //修改时间
+    qint64 modifyTime = 0;
+    //文件对象
+    QFileInfo _fileInfo;
 
 
     static Node* create(QString name="", Node *parent=nullptr, bool isdir=false, int file_type=-1, QString ext="")
@@ -84,6 +91,7 @@ struct Node {
         }
         node->parent = parent;
         node->_fileType = file_type;
+        node->_fileInfo = QFileInfo(node->fullPath());
         return node;
     }
 
@@ -221,7 +229,35 @@ struct Node {
     {
         return this->_fileSize;
     }
+
+    void setFileInfo(QFileInfo info)
+    {
+        this->_fileInfo = info;
+    }
+
+    QFileInfo fileInfo()
+    {
+        return this->_fileInfo;
+    }
 };
+
+static bool nodeListSortByNameAsc(const Node *node1, const Node *node2)
+{
+    return node1->name < node2->name;
+}
+static bool nodeListSortByNameDesc(const Node *node1, const Node *node2)
+{
+    return node1->name > node2->name;
+}
+static bool nodeListSortBySizeAsc(const Node *node1, const Node *node2)
+{
+    return node1->_fileSize < node2->_fileSize;
+}
+static bool nodeListSortBySizeDesc(const Node *node1, const Node *node2)
+{
+    return node1->_fileSize > node2->_fileSize;
+}
+
 
 class Common
 {

@@ -135,12 +135,27 @@
     <property name="title">
      <string>视图</string>
     </property>
+    <widget class="QMenu" name="menu">
+     <property name="title">
+      <string>排序</string>
+     </property>
+     <addaction name="actionSortName"/>
+     <addaction name="actionSortPath"/>
+     <addaction name="actionSortSize"/>
+     <addaction name="actionSortType"/>
+     <addaction name="actionSortExt"/>
+     <addaction name="actionSortModifyTime"/>
+     <addaction name="actionSortCreateTime"/>
+     <addaction name="separator"/>
+     <addaction name="actionSortAsc"/>
+     <addaction name="actionSortDesc"/>
+    </widget>
     <addaction name="separator"/>
     <addaction name="actionDefaultSize"/>
     <addaction name="actionMidSize"/>
     <addaction name="actionBigSize"/>
     <addaction name="separator"/>
-    <addaction name="actionSortBy"/>
+    <addaction name="menu"/>
     <addaction name="actionFlush"/>
     <addaction name="separator"/>
     <addaction name="actionFixTop"/>
@@ -247,11 +262,6 @@
    </property>
    <property name="text">
     <string>较大</string>
-   </property>
-  </action>
-  <action name="actionSortBy">
-   <property name="text">
-    <string>排序</string>
    </property>
   </action>
   <action name="actionFlush">
@@ -427,6 +437,84 @@
   <action name="actionCopyToDesktop">
    <property name="text">
     <string>复制到桌面</string>
+   </property>
+  </action>
+  <action name="actionSortName">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>文件名</string>
+   </property>
+  </action>
+  <action name="actionSortPath">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>路径</string>
+   </property>
+  </action>
+  <action name="actionSortSize">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>大小</string>
+   </property>
+  </action>
+  <action name="actionSortType">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>类型</string>
+   </property>
+  </action>
+  <action name="actionSortExt">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>扩展名</string>
+   </property>
+  </action>
+  <action name="actionSortModifyTime">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>修改时间</string>
+   </property>
+  </action>
+  <action name="actionSortCreateTime">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>创建时间</string>
+   </property>
+  </action>
+  <action name="actionSortAsc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>升序</string>
+   </property>
+  </action>
+  <action name="actionSortDesc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>降序</string>
    </property>
   </action>
  </widget>

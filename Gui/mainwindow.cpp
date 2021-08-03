@@ -126,12 +126,16 @@ void MainWindow::onListWidgetItemClicked(QListWidgetItem *item)
 void MainWindow::flushResult()
 {
     QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
+
+    qSort(resultList->begin(), resultList->end(), nodeListSortBySizeAsc);
+
     this->ui->listWidget->clear();
     for(int i = 0; i < resultList->size(); i ++)
     {
+        Node *node = resultList->at(i);
         QListWidgetItem *item=new QListWidgetItem(this->ui->listWidget);
-        QString fullPath = resultList->at(i)->fullPath();
-        item->setText(QString("%1").arg(resultList->at(i)->name));
+        QString fullPath = node->fullPath();
+        item->setText(QString("%1 (%2)").arg(node->name).arg(Common::formatFileSize(node->fileSize())));
 
         QFileInfo fileInfo(fullPath);
         QFileIconProvider fileIcon;
