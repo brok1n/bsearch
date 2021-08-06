@@ -13,6 +13,8 @@ DataCenter::DataCenter(QObject *parent)
     , mScanFinishedCount(0)
     , mScanDiskFinished(false)
     , mIsRunning(true)
+    , mSortType(SORT_TYPE::BY_NAME)
+    , mSortOrder(SORT_ORDER::SORT_ASC)
 {
 
 }
@@ -138,4 +140,24 @@ void DataCenter::printNode(Node *node, int level)
         Node *n = node->childs.at(i);
         printNode(n, level+1);
     }
+}
+
+int DataCenter::sortType()
+{
+    return mSortType;
+}
+
+void DataCenter::setSortType(int tp)
+{
+    this->mSortType = tp;
+}
+
+int DataCenter::sortOrder()
+{
+    return mSortOrder;
+}
+
+void DataCenter::setSortOrder(int od)
+{
+    this->mSortOrder = od;
 }

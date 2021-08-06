@@ -166,9 +166,6 @@
     </property>
     <addaction name="actionMatchCase"/>
     <addaction name="separator"/>
-    <addaction name="actionCreateFilter"/>
-    <addaction name="actionManagerFilter"/>
-    <addaction name="separator"/>
     <addaction name="actionTxtContentSearch"/>
     <addaction name="separator"/>
     <addaction name="actionAll"/>
@@ -185,12 +182,8 @@
      <string>帮助</string>
     </property>
     <addaction name="actionHelp"/>
-    <addaction name="actionSearchRegular"/>
-    <addaction name="actionRegex"/>
     <addaction name="separator"/>
-    <addaction name="actionHomePage"/>
     <addaction name="actionCheckUpdate"/>
-    <addaction name="actionDonation"/>
     <addaction name="separator"/>
     <addaction name="actionSuggestionfeedback"/>
     <addaction name="actionAboutBSearch"/>
@@ -283,16 +276,6 @@
    </property>
    <property name="text">
     <string>区分大小写</string>
-   </property>
-  </action>
-  <action name="actionCreateFilter">
-   <property name="text">
-    <string>创建过滤器</string>
-   </property>
-  </action>
-  <action name="actionManagerFilter">
-   <property name="text">
-    <string>管理过滤器</string>
    </property>
   </action>
   <action name="actionAll">

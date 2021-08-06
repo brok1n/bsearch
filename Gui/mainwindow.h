@@ -11,21 +11,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-//排序类型
-enum SORT_TYPE
-{
-    SORT_ASC,   //升序
-    SORT_DESC,  //降序
-    BY_NAME,    //名称
-    BY_SIZE,    //大小
-    BY_PATH,    //路径
-    BY_TYPE,    //类型
-    BY_EXT,     //扩展名
-    BY_CTIME,   //创建时间
-    BY_MTIME    //修改时间
-};
-
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -94,6 +79,24 @@ private slots:
     void on_actionMoveTo_triggered();
 
     void on_actionCopyToDesktop_triggered();
+
+    void on_actionSortName_triggered();
+
+    void on_actionSortPath_triggered();
+
+    void on_actionSortSize_triggered();
+
+    void on_actionSortType_triggered();
+
+    void on_actionSortExt_triggered();
+
+    void on_actionSortModifyTime_triggered();
+
+    void on_actionSortCreateTime_triggered();
+
+    void on_actionSortAsc_triggered();
+
+    void on_actionSortDesc_triggered();
 
 public:
 

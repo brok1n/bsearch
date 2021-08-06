@@ -30,17 +30,6 @@ CopyMoveFileDialog::CopyMoveFileDialog(QList<QString> files, QString targetPath,
 
     this->setProcessFileNumber(mFileNumber);
 
-//    if(mFileNumber > 0)
-//    {
-//        QFileInfo firstFileInfo(mFiles.at(0));
-//        QFileInfo firstFileDirInfo(firstFileInfo.absolutePath());
-//        this->ui->sourcePathBtn->setText(firstFileDirInfo.fileName());
-
-//        this->ui->currentFileNameLabel->setText(firstFileInfo.fileName());
-
-//        this->ui->remainItemsLabel->setText(QString("%1 (%2)").arg(mFileNumber).arg(mFileSumSize));
-//    }
-
 
     QFileInfo targetPathInfo(mTargetPath);
     this->setTargetDir(targetPathInfo.fileName());

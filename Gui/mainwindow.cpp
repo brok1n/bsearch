@@ -20,6 +20,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QMessageBox>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -70,9 +71,42 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug() << "platformName:" << platformName;
 
 
+    switch (DataCenter::GetInstance()->sortType()) {
+    case SORT_TYPE::BY_NAME:
+        this->ui->actionSortName->setChecked(true);
+        break;
+    case SORT_TYPE::BY_SIZE:
+        this->ui->actionSortSize->setChecked(true);
+        break;
+    case SORT_TYPE::BY_PATH:
+        this->ui->actionSortPath->setChecked(true);
+        break;
+    case SORT_TYPE::BY_TYPE:
+        this->ui->actionSortType->setChecked(true);
+        break;
+    case SORT_TYPE::BY_EXT:
+        this->ui->actionSortExt->setChecked(true);
+        break;
+    case SORT_TYPE::BY_CTIME:
+        this->ui->actionSortCreateTime->setChecked(true);
+        break;
+    case SORT_TYPE::BY_MTIME:
+        this->ui->actionSortModifyTime->setChecked(true);
+        break;
+    }
+
+    switch (DataCenter::GetInstance()->sortOrder()) {
+    case SORT_ORDER::SORT_ASC:
+        this->ui->actionSortAsc->setChecked(true);
+        break;
+    case SORT_ORDER::SORT_DESC:
+        this->ui->actionSortDesc->setChecked(true);
+        break;
+    }
+
+
 //    QString desktopFileName = QApplication::desktopFileName();
 //    qDebug() << "desktopFileName:" << desktopFileName;
-
 
 //    ThreadPoolTest *test = new ThreadPoolTest;
 //    test->start();
@@ -127,10 +161,13 @@ void MainWindow::flushResult()
 {
     QList<Node*> *resultList = DataCenter::GetInstance()->resultList();
 
-    qSort(resultList->begin(), resultList->end(), nodeListSortBySizeAsc);
+    QElapsedTimer flushTimer;
+    flushTimer.start();
 
     this->ui->listWidget->clear();
-    for(int i = 0; i < resultList->size(); i ++)
+    int size = resultList->size();
+    size = size > 25 ? 25 : size;
+    for(int i = 0; i < size; i ++)
     {
         Node *node = resultList->at(i);
         QListWidgetItem *item=new QListWidgetItem(this->ui->listWidget);
@@ -146,8 +183,15 @@ void MainWindow::flushResult()
         item->setData(Qt::UserRole, fullPath);
 
         this->ui->listWidget->addItem(item);
+//        this->update();
+        QApplication::processEvents();
     }
-   this-> ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
+    this-> ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
+
+    this->update();
+
+    qint64 flushTime = flushTimer.elapsed();
+    qDebug() << "结果展示完毕! 耗时：" << (flushTime / 1000) << "秒" << (flushTime % 1000) << "毫秒";
 }
 
 void MainWindow::startSearch()
@@ -571,4 +615,121 @@ void MainWindow::on_actionCopyToDesktop_triggered()
     CopyMoveFileDialog *copyMoveFileDialog = new CopyMoveFileDialog(files, desktopPath, false);
     copyMoveFileDialog->start();
 
+}
+
+
+void MainWindow::on_actionSortName_triggered()
+{
+    if(this->ui->actionSortName->isChecked())
+    {
+        this->ui->actionSortSize->setChecked(false);
+        this->ui->actionSortPath->setChecked(false);
+        this->ui->actionSortType->setChecked(false);
+        this->ui->actionSortExt->setChecked(false);
+        this->ui->actionSortCreateTime->setChecked(false);
+        this->ui->actionSortModifyTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_NAME);
+    }
+}
+
+void MainWindow::on_actionSortPath_triggered()
+{
+    if(this->ui->actionSortPath->isChecked())
+    {
+        this->ui->actionSortName->setChecked(false);
+        this->ui->actionSortSize->setChecked(false);
+        this->ui->actionSortType->setChecked(false);
+        this->ui->actionSortExt->setChecked(false);
+        this->ui->actionSortCreateTime->setChecked(false);
+        this->ui->actionSortModifyTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_SIZE);
+    }
+}
+
+void MainWindow::on_actionSortSize_triggered()
+{
+    if(this->ui->actionSortSize->isChecked())
+    {
+        this->ui->actionSortName->setChecked(false);
+        this->ui->actionSortPath->setChecked(false);
+        this->ui->actionSortType->setChecked(false);
+        this->ui->actionSortExt->setChecked(false);
+        this->ui->actionSortCreateTime->setChecked(false);
+        this->ui->actionSortModifyTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_SIZE);
+    }
+}
+
+void MainWindow::on_actionSortType_triggered()
+{
+    if(this->ui->actionSortType->isChecked())
+    {
+        this->ui->actionSortName->setChecked(false);
+        this->ui->actionSortPath->setChecked(false);
+        this->ui->actionSortSize->setChecked(false);
+        this->ui->actionSortExt->setChecked(false);
+        this->ui->actionSortCreateTime->setChecked(false);
+        this->ui->actionSortModifyTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_TYPE);
+    }
+}
+
+void MainWindow::on_actionSortExt_triggered()
+{
+    if(this->ui->actionSortExt->isChecked())
+    {
+        this->ui->actionSortName->setChecked(false);
+        this->ui->actionSortPath->setChecked(false);
+        this->ui->actionSortSize->setChecked(false);
+        this->ui->actionSortType->setChecked(false);
+        this->ui->actionSortCreateTime->setChecked(false);
+        this->ui->actionSortModifyTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_EXT);
+    }
+}
+
+void MainWindow::on_actionSortModifyTime_triggered()
+{
+    if(this->ui->actionSortModifyTime->isChecked())
+    {
+        this->ui->actionSortName->setChecked(false);
+        this->ui->actionSortPath->setChecked(false);
+        this->ui->actionSortSize->setChecked(false);
+        this->ui->actionSortType->setChecked(false);
+        this->ui->actionSortExt->setChecked(false);
+        this->ui->actionSortCreateTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_MTIME);
+    }
+}
+
+void MainWindow::on_actionSortCreateTime_triggered()
+{
+    if(this->ui->actionSortCreateTime->isChecked())
+    {
+        this->ui->actionSortName->setChecked(false);
+        this->ui->actionSortPath->setChecked(false);
+        this->ui->actionSortSize->setChecked(false);
+        this->ui->actionSortType->setChecked(false);
+        this->ui->actionSortExt->setChecked(false);
+        this->ui->actionSortModifyTime->setChecked(false);
+        DataCenter::GetInstance()->setSortType(SORT_TYPE::BY_CTIME);
+    }
+}
+
+void MainWindow::on_actionSortAsc_triggered()
+{
+    if(this->ui->actionSortAsc->isChecked())
+    {
+        this->ui->actionSortDesc->setChecked(false);
+        DataCenter::GetInstance()->setSortOrder(SORT_ORDER::SORT_ASC);
+    }
+}
+
+void MainWindow::on_actionSortDesc_triggered()
+{
+    if(this->ui->actionSortDesc->isChecked())
+    {
+        this->ui->actionSortAsc->setChecked(false);
+        DataCenter::GetInstance()->setSortOrder(SORT_ORDER::SORT_DESC);
+    }
 }

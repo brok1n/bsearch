@@ -45,6 +45,12 @@ public:
 
     void printNode(Node*, int);
 
+    int sortType();
+    void setSortType(int);
+
+    int sortOrder();
+    void setSortOrder(int);
+
 signals:
 
 private:
@@ -67,6 +73,11 @@ private:
     bool mScanDiskFinished;
     //运行状态
     bool mIsRunning;
+    //排序类型
+    int mSortType;
+    //排序方式
+    int mSortOrder;
+
 };
 
 #endif // DATACENTER_H

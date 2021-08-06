@@ -4,6 +4,7 @@
 #include <QList>
 #include <QStringList>
 #include <QFileInfo>
+#include <QDateTime>
 
 //文件大小等级
 const qint64 FILE_SIZE_TB = 1024 * 1024 * 1024 * (qint64)1024;
@@ -39,6 +40,25 @@ enum FILE_TYPE
     FILE_COMPRESS,
     FILE_EXECUTABLE,
     FILE_DIR
+};
+
+//排序类型
+enum SORT_TYPE
+{
+    BY_NAME = 1000,    //名称
+    BY_SIZE = 1100,    //大小
+    BY_PATH = 1200,    //路径
+    BY_TYPE = 1300,    //类型
+    BY_EXT  = 1400,     //扩展名
+    BY_CTIME= 1500,   //创建时间
+    BY_MTIME= 1600    //修改时间
+};
+
+//排序方式
+enum SORT_ORDER
+{
+    SORT_ASC = 10,   //升序
+    SORT_DESC= 20,  //降序
 };
 
 const QString FILE_TYPE_NAME[8] =
@@ -91,7 +111,14 @@ struct Node {
         }
         node->parent = parent;
         node->_fileType = file_type;
+        if(file_type == -1)
+        {
+            node->fileType();
+        }
         node->_fileInfo = QFileInfo(node->fullPath());
+        node->_fileSize = node->_fileInfo.size();
+        node->createTime = node->fileInfo().birthTime().toMSecsSinceEpoch();
+        node->modifyTime = node->fileInfo().lastModified().toMSecsSinceEpoch();
         return node;
     }
 
@@ -230,34 +257,11 @@ struct Node {
         return this->_fileSize;
     }
 
-    void setFileInfo(QFileInfo info)
-    {
-        this->_fileInfo = info;
-    }
-
     QFileInfo fileInfo()
     {
         return this->_fileInfo;
     }
 };
-
-static bool nodeListSortByNameAsc(const Node *node1, const Node *node2)
-{
-    return node1->name < node2->name;
-}
-static bool nodeListSortByNameDesc(const Node *node1, const Node *node2)
-{
-    return node1->name > node2->name;
-}
-static bool nodeListSortBySizeAsc(const Node *node1, const Node *node2)
-{
-    return node1->_fileSize < node2->_fileSize;
-}
-static bool nodeListSortBySizeDesc(const Node *node1, const Node *node2)
-{
-    return node1->_fileSize > node2->_fileSize;
-}
-
 
 class Common
 {
