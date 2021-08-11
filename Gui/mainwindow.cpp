@@ -24,7 +24,7 @@
 
 
 const char checkUpdateUrl[] = "https://gitee.com/brok1n/bsearch/raw/master/Api/checkUpdate.json";
-const char checkUpdateBakUrl[] = "https://gitee.com/brok1n/bsearch/raw/master/Api/checkUpdate.json";
+const char checkUpdateBakUrl[] = "https://raw.githubusercontent.com/brok1n/bsearch/master/Api/checkUpdate.json";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -130,10 +130,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // ----- 版本更新相关 -----
 
-#ifndef QT_NO_SSL
+//#ifndef QT_NO_SSL
     connect(&qnam, &QNetworkAccessManager::sslErrors,
             this, &MainWindow::sslErrors);
-#endif
+//#endif
 
     // ----- 版本更新相关 -----
 
@@ -794,15 +794,32 @@ void MainWindow::on_actionCheckUpdate_triggered()
     QString currentPath = QDir::currentPath();
     qDebug() << "currentPath:" << currentPath;
 
+    qDebug()<<"QSslSocket="<<QSslSocket::sslLibraryBuildVersionString();
+    qDebug() << "OpenSSL支持情况:" << QSslSocket::supportsSsl();
 
-    reply = qnam.get(QNetworkRequest(url));
-    connect(reply, &QNetworkReply::finished, this, &HttpWindow::httpFinished);
-    connect(reply, &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
+    reply = qnam.get(QNetworkRequest(QUrl(checkUpdateUrl)));
+    connect(reply, &QNetworkReply::finished, this, &MainWindow::httpFinished);
+    connect(reply, &QIODevice::readyRead, this, &MainWindow::httpReadyRead);
+
+}
+
+void MainWindow::httpFinished()
+{
+    if(reply->error() == QNetworkReply::NoError)
+    {
+       QByteArray jsonData = reply->readAll();
+       qDebug() << "http finished size:" << jsonData.size();
+    }
+}
+
+void MainWindow::httpReadyRead()
+{
+
 
 }
 
 
-#ifndef QT_NO_SSL
+//#ifndef QT_NO_SSL
 void MainWindow::sslErrors(QNetworkReply *, const QList<QSslError> &errors)
 {
     QString errorString;
@@ -818,4 +835,14 @@ void MainWindow::sslErrors(QNetworkReply *, const QList<QSslError> &errors)
         reply->ignoreSslErrors();
     }
 }
-#endif
+//#endif
+
+
+void MainWindow::error(QNetworkReply::NetworkError)
+{
+    //如果发生网络错误，就用备用地址重新检测
+    qDebug() << "网络错误！使用备用地址！";
+    reply = qnam.get(QNetworkRequest(QUrl(checkUpdateBakUrl)));
+    connect(reply, &QNetworkReply::finished, this, &MainWindow::httpFinished);
+    connect(reply, &QIODevice::readyRead, this, &MainWindow::httpReadyRead);
+}

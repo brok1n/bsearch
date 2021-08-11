@@ -8,13 +8,11 @@
 #include "datacenter.h"
 #include "aboutdialog.h"
 #include <QNetworkAccessManager>
+#include <QUrl>
+#include <QNetworkReply>
+#include <QSslError>
 
 QT_BEGIN_NAMESPACE
-
-class QSslError;
-class QAuthenticator;
-class QNetworkReply;
-
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
@@ -111,7 +109,10 @@ private slots:
 
     void on_actionCheckUpdate_triggered();
 
+    void httpFinished();
+    void httpReadyRead();
     void sslErrors(QNetworkReply *, const QList<QSslError> &errors);
+    void error(QNetworkReply::NetworkError);
 
 public:
 
