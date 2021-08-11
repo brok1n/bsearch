@@ -3,6 +3,7 @@
         <file>back.png</file>
         <file>ok.png</file>
         <file>diff.png</file>
+        <file>bsearch_icon_256.png</file>
     </qresource>
     <qresource prefix="/style"/>
 </RCC>

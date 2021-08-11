@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "core.h"
-#include "threadpooltest.h"
 #include "copymovefiledialog.h"
 #include <QApplication>
 #include <QDateTime>
@@ -21,12 +20,19 @@
 #include <QStandardPaths>
 #include <QMessageBox>
 #include <QDir>
+#include <QtNetwork>
+
+
+const char checkUpdateUrl[] = "https://gitee.com/brok1n/bsearch/raw/master/Api/checkUpdate.json";
+const char checkUpdateBakUrl[] = "https://gitee.com/brok1n/bsearch/raw/master/Api/checkUpdate.json";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , mWaitResultTimer(new QTimer())
     , mWaitScanDiskTimer(new QTimer())
+    , mAboutDialog(nullptr)
+    , reply(nullptr)
 {
     this->ui->setupUi(this);
 
@@ -105,6 +111,33 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
+    QList<QString> testList;
+
+    testList.append("Brok1n");
+//    testList.append("brok1n");
+    testList.append("Jacklist");
+//    testList.append("Jacklist");
+    QString key = "brok1n";
+    if(testList.contains(key))
+    {
+        qDebug() << "contains " << key;
+    }
+    else
+    {
+        qDebug() << "not contains " << key;
+    }
+
+
+    // ----- 版本更新相关 -----
+
+#ifndef QT_NO_SSL
+    connect(&qnam, &QNetworkAccessManager::sslErrors,
+            this, &MainWindow::sslErrors);
+#endif
+
+    // ----- 版本更新相关 -----
+
+
 //    QString desktopFileName = QApplication::desktopFileName();
 //    qDebug() << "desktopFileName:" << desktopFileName;
 
@@ -115,6 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     qDebug() << "窗口析构函数:" << mPanelId;
+    mAboutDialog->deleteLater();
     Core::GetInstance()->releaseControlPanel(mPanelId);
     mWaitResultTimer->stop();
     delete mWaitResultTimer;
@@ -733,3 +767,55 @@ void MainWindow::on_actionSortDesc_triggered()
         DataCenter::GetInstance()->setSortOrder(SORT_ORDER::SORT_DESC);
     }
 }
+
+void MainWindow::on_actionMatchCase_triggered()
+{
+    if(this->ui->actionMatchCase->isChecked())
+    {
+        DataCenter::GetInstance()->setIgnoreCase(false);
+    }
+    else
+    {
+        DataCenter::GetInstance()->setIgnoreCase(true);
+    }
+}
+
+void MainWindow::on_actionAboutBSearch_triggered()
+{
+    if(mAboutDialog == nullptr)
+    {
+        mAboutDialog = new AboutDialog();
+    }
+    mAboutDialog->show();
+}
+
+void MainWindow::on_actionCheckUpdate_triggered()
+{
+    QString currentPath = QDir::currentPath();
+    qDebug() << "currentPath:" << currentPath;
+
+
+    reply = qnam.get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &HttpWindow::httpFinished);
+    connect(reply, &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
+
+}
+
+
+#ifndef QT_NO_SSL
+void MainWindow::sslErrors(QNetworkReply *, const QList<QSslError> &errors)
+{
+    QString errorString;
+    for (const QSslError &error : errors) {
+        if (!errorString.isEmpty())
+            errorString += '\n';
+        errorString += error.errorString();
+    }
+
+    if (QMessageBox::warning(this, tr("SSL Errors"),
+                             tr("One or more SSL errors has occurred:\n%1").arg(errorString),
+                             QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore) {
+        reply->ignoreSslErrors();
+    }
+}
+#endif

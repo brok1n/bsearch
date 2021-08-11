@@ -15,6 +15,7 @@ DataCenter::DataCenter(QObject *parent)
     , mIsRunning(true)
     , mSortType(SORT_TYPE::BY_NAME)
     , mSortOrder(SORT_ORDER::SORT_ASC)
+    , mIgnoreCase(true)
 {
 
 }
@@ -160,4 +161,14 @@ int DataCenter::sortOrder()
 void DataCenter::setSortOrder(int od)
 {
     this->mSortOrder = od;
+}
+
+bool DataCenter::ignoreCase()
+{
+    return mIgnoreCase;
+}
+
+void DataCenter::setIgnoreCase(bool cs)
+{
+    this->mIgnoreCase = cs;
 }

@@ -51,6 +51,9 @@ public:
     int sortOrder();
     void setSortOrder(int);
 
+    bool ignoreCase();
+    void setIgnoreCase(bool);
+
 signals:
 
 private:
@@ -77,6 +80,8 @@ private:
     int mSortType;
     //排序方式
     int mSortOrder;
+    //忽略大小写  默认 true
+    bool mIgnoreCase;
 
 };
 

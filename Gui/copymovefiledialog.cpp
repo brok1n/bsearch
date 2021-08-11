@@ -21,6 +21,7 @@ CopyMoveFileDialog::CopyMoveFileDialog(QList<QString> files, QString targetPath,
     , mCurrentFilePath("")
     , mWaitUserSelection(false)
     , mIgnoreCurrentFile(false)
+    , mCancel(false)
 {
     ui->setupUi(this);
 
@@ -120,6 +121,12 @@ void CopyMoveFileDialog::flushWindowTitle()
 
 }
 
+void CopyMoveFileDialog::closeEvent(QCloseEvent *event)
+{
+    mCancel = true;
+    event->ignore();
+}
+
 void CopyMoveFileDialog::startProcess()
 {
     qDebug() << "开始处理文件";
@@ -141,7 +148,8 @@ void CopyMoveFileDialog::startProcess()
         }
 
         //目标
-        QFileInfo target(mTargetPath + "/" + fileInfo.fileName());
+        QString targetFilePath = mTargetPath + "/" + fileInfo.fileName();
+        QFileInfo target(targetFilePath);
 
         if(target.exists())
         {
@@ -184,6 +192,10 @@ void CopyMoveFileDialog::startProcess()
             this->ui->progressBar->setValue(process);
             qDebug() << "process:" << process;
             QApplication::processEvents();
+            if(mCancel)
+            {
+                break;
+            }
         }
         input.close();
         out.close();
@@ -193,12 +205,28 @@ void CopyMoveFileDialog::startProcess()
             QFile currentFile(mCurrentFilePath);
             currentFile.remove();
         }
+        if(mCancel)
+        {
+            QFile targetFile(targetFilePath);
+            targetFile.remove();
+            break;
+        }
         QApplication::processEvents();
     }
-    this->ui->progressBar->setValue(100);
+
     QApplication::processEvents();
-    this->ui->remainTimeLabel->setText("处理完成");
-    this->ui->remainItemsLabel->setText("处理完成");
+    if(mCancel)
+    {
+        this->ui->remainTimeLabel->setText("用户取消");
+        this->ui->remainItemsLabel->setText("用户取消");
+    }
+    else
+    {
+        this->ui->progressBar->setValue(100);
+        this->ui->remainTimeLabel->setText("处理完成");
+        this->ui->remainItemsLabel->setText("处理完成");
+    }
+
     QApplication::processEvents();
     QTimer::singleShot(1000, this, SLOT(onProcessFinished()));
 

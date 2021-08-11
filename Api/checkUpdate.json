@@ -1,0 +1,18 @@
+{
+	"code":200,
+	"msg":"success",
+	"data": {
+		"versionCode":20210811,
+		"versionName":"1.0.0",
+		"update":true,
+		"files":[
+			{
+				"fileName":"",
+				"fileMd5":"",
+				"filePath":"",
+				"url":"",
+				"bakUrl":"",
+			}
+		]
+	}
+}

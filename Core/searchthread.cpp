@@ -7,6 +7,14 @@ SearchThread::SearchThread(Node *node, QString key, int fileType)
     , mRunning(false)
     , mFileType(fileType)
 {
+    if(DataCenter::GetInstance()->ignoreCase())
+    {
+        mCaseSensitivity = Qt::CaseInsensitive;
+    }
+    else
+    {
+        mCaseSensitivity = Qt::CaseSensitive;
+    }
 }
 
 SearchThread::~SearchThread()
@@ -41,7 +49,8 @@ void SearchThread::eachNode(Node *node, QList<Node*> *resultList, int level)
             break;
         }
         Node *n = node->childs.at(i);
-        if(n->fileExt().contains(mKey) || n->name.contains(mKey))
+//        if(n->fileExt().contains(mKey) || n->name.contains(mKey))
+        if(n->name.contains(mKey, mCaseSensitivity))
         {
             if(mFileType == FILE_TYPE::FILE_ALL || mFileType == n->fileType())
             {

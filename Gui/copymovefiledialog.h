@@ -1,6 +1,7 @@
 #ifndef COPYMOVEFILEDIALOG_H
 #define COPYMOVEFILEDIALOG_H
 
+#include <QCloseEvent>
 #include <QDialog>
 
 namespace Ui {
@@ -34,6 +35,8 @@ public:
     //刷新标题
     void flushWindowTitle();
 
+    void closeEvent(QCloseEvent *event);
+
 private slots:
     //开始处理，为了不阻塞start方法，这里使用了个定时器启动的新方法处理
     void startProcess();
@@ -61,6 +64,7 @@ private:
     QString mCurrentFilePath;   //当前在处理的文件路径
     bool mWaitUserSelection;    //是否等待用户选择
     bool mIgnoreCurrentFile;    //是否忽略当前文件
+    bool mCancel;   //用户是否取消了操作 比如用户点击了关闭按钮
 };
 
 #endif // COPYMOVEFILEDIALOG_H

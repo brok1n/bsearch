@@ -23,7 +23,7 @@
       <item>
        <widget class="QCheckBox" name="contentSearchCbox">
         <property name="text">
-         <string>文本内容搜索</string>
+         <string>内容搜索</string>
         </property>
        </widget>
       </item>
@@ -181,12 +181,10 @@
     <property name="title">
      <string>帮助</string>
     </property>
-    <addaction name="actionHelp"/>
+    <addaction name="actionAboutBSearch"/>
     <addaction name="separator"/>
     <addaction name="actionCheckUpdate"/>
     <addaction name="separator"/>
-    <addaction name="actionSuggestionfeedback"/>
-    <addaction name="actionAboutBSearch"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -351,44 +349,14 @@
     <string>选项</string>
    </property>
   </action>
-  <action name="actionHelp">
-   <property name="text">
-    <string>帮助</string>
-   </property>
-  </action>
-  <action name="actionSearchRegular">
-   <property name="text">
-    <string>搜索规则</string>
-   </property>
-  </action>
-  <action name="actionRegex">
-   <property name="text">
-    <string>正则表达式</string>
-   </property>
-  </action>
-  <action name="actionHomePage">
-   <property name="text">
-    <string>回到首页</string>
-   </property>
-  </action>
   <action name="actionCheckUpdate">
    <property name="text">
     <string>检查更新</string>
    </property>
   </action>
-  <action name="actionDonation">
-   <property name="text">
-    <string>捐赠</string>
-   </property>
-  </action>
   <action name="actionAboutBSearch">
    <property name="text">
     <string>关于BSearch</string>
-   </property>
-  </action>
-  <action name="actionSuggestionfeedback">
-   <property name="text">
-    <string>建议反馈</string>
    </property>
   </action>
   <action name="actionDir">

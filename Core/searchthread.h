@@ -24,6 +24,7 @@ private:
     QString mKey;
     bool mRunning;
     int mFileType;
+    Qt::CaseSensitivity mCaseSensitivity;
 };
 
 #endif // SEARCHTHREAD_H

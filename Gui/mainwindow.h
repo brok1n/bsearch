@@ -6,8 +6,15 @@
 #include <QTimer>
 #include <QListWidgetItem>
 #include "datacenter.h"
+#include "aboutdialog.h"
+#include <QNetworkAccessManager>
 
 QT_BEGIN_NAMESPACE
+
+class QSslError;
+class QAuthenticator;
+class QNetworkReply;
+
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
@@ -98,6 +105,14 @@ private slots:
 
     void on_actionSortDesc_triggered();
 
+    void on_actionMatchCase_triggered();
+
+    void on_actionAboutBSearch_triggered();
+
+    void on_actionCheckUpdate_triggered();
+
+    void sslErrors(QNetworkReply *, const QList<QSslError> &errors);
+
 public:
 
     void flushResult();
@@ -110,6 +125,9 @@ private:
     QTimer *mWaitScanDiskTimer;
     qint64 mPanelId;
     QSize mDefaultIconSize;
+    AboutDialog *mAboutDialog;
+    QNetworkAccessManager qnam;
+    QNetworkReply *reply;
 
 };
 #endif // MAINWINDOW_H
