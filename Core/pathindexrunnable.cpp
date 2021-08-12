@@ -72,7 +72,6 @@ void PathIndexRunnable::eachDir(QFileInfo info, Node *parent)
         }
         if(f.isDir())
         {
-            node->isDir = true;
             QString tmpName = node->name.toLower();
 //            if(tmpName.startsWith(".") || tmpName.startsWith("_") || tmpName.startsWith("node_modules"))
 //            {

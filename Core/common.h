@@ -39,8 +39,20 @@ enum FILE_TYPE
     FILE_DOCUMENT,
     FILE_COMPRESS,
     FILE_EXECUTABLE,
-    FILE_DIR
+    FILE_DIR,
+    FILE_UNKNOWTYPE
 };
+
+const char FILE_ALL_NAME[] = "全部";
+const char FILE_MUSIC_NAME[] = "音乐";
+const char FILE_VIDEO_NAME[] = "视频";
+const char FILE_IMAGE_NAME[] = "图片";
+const char FILE_DOCUMENT_NAME[] = "文档";
+const char FILE_COMPRESS_NAME[] = "压缩包";
+const char FILE_EXECUTABLE_NAME[] = "可执行";
+const char FILE_DIR_NAME[] = "文件夹";
+const char FILE_OTHER_NAME[] = "";
+
 
 //排序类型
 enum SORT_TYPE
@@ -81,12 +93,10 @@ struct Node {
     QString _ext = "";
     //子文件列表
     QList<Node*> childs;
-    //是否是文件夹
-    bool isDir = false;
     //父节点 所属文件夹
     Node *parent = nullptr;
     //文件类型 音乐、视频、图片、文档、压缩包、可执行文件
-    int _fileType = -1;
+    FILE_TYPE _fileType = FILE_UNKNOWTYPE;
     //文件大小 64位
     qint64 _fileSize = 0;
     //完整路径
@@ -99,24 +109,25 @@ struct Node {
     QFileInfo _fileInfo;
 
 
-    static Node* create(QString name="", Node *parent=nullptr, bool isdir=false, int file_type=-1, QString ext="")
+    static Node* create(QString name="", Node *parent=nullptr, FILE_TYPE file_type=FILE_UNKNOWTYPE, QString ext="")
     {
         Node *node = new Node();
         node->name = name;
         node->_ext = ext;
-        node->isDir =  isdir;
         if(parent != nullptr)
         {
             parent->childs.append(node);
         }
         node->parent = parent;
+        node->_fileInfo = QFileInfo(node->fullPath());
+        node->_fileSize = node->_fileInfo.size();
+
         node->_fileType = file_type;
-        if(file_type == -1)
+        if(file_type == FILE_UNKNOWTYPE)
         {
             node->fileType();
         }
-        node->_fileInfo = QFileInfo(node->fullPath());
-        node->_fileSize = node->_fileInfo.size();
+
         node->createTime = node->fileInfo().birthTime().toMSecsSinceEpoch();
         node->modifyTime = node->fileInfo().lastModified().toMSecsSinceEpoch();
         return node;
@@ -132,7 +143,7 @@ struct Node {
     //完整路径
     QString dir()
     {
-        if(isDir)
+        if(isDir())
         {
             return eachParent(this).replace("//", "/");
         }
@@ -169,16 +180,22 @@ struct Node {
         }
     }
 
+    //是否是文件夹
+    bool isDir()
+    {
+        return _fileInfo.isDir();
+    }
+
     //扩展名
     QString fileExt()
     {
         //如果文件类型处理过，就不再处理文件扩展名。
-        if(_fileType >= 0)
+        if(_fileType != FILE_UNKNOWTYPE)
         {
             return _ext;
         }
         //文件夹、或空文件、或没有扩展名，扩展名都为空
-        if(isDir || name.isEmpty() || !name.contains("."))
+        if(isDir() || name.isEmpty() || !name.contains("."))
         {
             _ext = "";
             return "";
@@ -198,52 +215,59 @@ struct Node {
     }
 
     //文件类型
-    int fileType()
+    FILE_TYPE fileType()
     {
-        if(_fileType >= 0)
+        if(_fileType != FILE_UNKNOWTYPE)
         {
             return _fileType;
         }
         QString ext = fileExt();
         if(ext.isEmpty())
         {
-            _fileType = 0;
-            return _fileType;
-        }
-
-        if(FILE_TYPE_MUSIC.contains(ext))
-        {
-            _fileType = FILE_TYPE::FILE_MUSIC;
-        }
-        else if(FILE_TYPE_VIDEO.contains(ext))
-        {
-            _fileType = FILE_TYPE::FILE_VIDEO;
-        }
-        else if(FILE_TYPE_IMAGE.contains(ext))
-        {
-            _fileType = FILE_TYPE::FILE_IMAGE;
-        }
-        else if(FILE_TYPE_DOCUMENT.contains(ext))
-        {
-            _fileType = FILE_TYPE::FILE_DOCUMENT;
-        }
-        else if(FILE_TYPE_COMPRESS.contains(ext))
-        {
-            _fileType = FILE_TYPE::FILE_COMPRESS;
-        }
-        else if(FILE_TYPE_EXECUTABLE.contains(ext))
-        {
-            _fileType = FILE_TYPE::FILE_EXECUTABLE;
-        }
-        else if(isDir)
-        {
-            _fileType = FILE_TYPE::FILE_DIR;
+            if(isDir())
+            {
+                _fileType = FILE_DIR;
+            }
+            else
+            {
+                _fileType = FILE_UNKNOWTYPE;
+            }
         }
         else
         {
-            _fileType = FILE_TYPE::FILE_ALL;
+            if(FILE_TYPE_MUSIC.contains(ext))
+            {
+                _fileType = FILE_TYPE::FILE_MUSIC;
+            }
+            else if(FILE_TYPE_VIDEO.contains(ext))
+            {
+                _fileType = FILE_TYPE::FILE_VIDEO;
+            }
+            else if(FILE_TYPE_IMAGE.contains(ext))
+            {
+                _fileType = FILE_TYPE::FILE_IMAGE;
+            }
+            else if(FILE_TYPE_DOCUMENT.contains(ext))
+            {
+                _fileType = FILE_TYPE::FILE_DOCUMENT;
+            }
+            else if(FILE_TYPE_COMPRESS.contains(ext))
+            {
+                _fileType = FILE_TYPE::FILE_COMPRESS;
+            }
+            else if(FILE_TYPE_EXECUTABLE.contains(ext))
+            {
+                _fileType = FILE_TYPE::FILE_EXECUTABLE;
+            }
+            else if(isDir())
+            {
+                _fileType = FILE_TYPE::FILE_DIR;
+            }
+            else
+            {
+                _fileType = FILE_TYPE::FILE_ALL;
+            }
         }
-
         return _fileType;
     }
 
@@ -270,6 +294,7 @@ public:
 
 
     static QString formatFileSize(qint64 size);
+    static QString fileTypeToName(FILE_TYPE);
 };
 
 #endif // COMMON_H

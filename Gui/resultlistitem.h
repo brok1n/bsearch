@@ -2,6 +2,7 @@
 #define RESULTLISTITEM_H
 
 #include <QWidget>
+#include "common.h"
 
 namespace Ui {
 class ResultListItem;
@@ -12,11 +13,12 @@ class ResultListItem : public QWidget
     Q_OBJECT
 
 public:
-    explicit ResultListItem(QWidget *parent = nullptr);
+    explicit ResultListItem(Node*, QWidget *parent = nullptr);
     ~ResultListItem();
 
 private:
     Ui::ResultListItem *ui;
+    Node *mNode;
 };
 
 #endif // RESULTLISTITEM_H

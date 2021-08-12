@@ -16,6 +16,8 @@ DataCenter::DataCenter(QObject *parent)
     , mSortType(SORT_TYPE::BY_NAME)
     , mSortOrder(SORT_ORDER::SORT_ASC)
     , mIgnoreCase(true)
+    , mFileCount(0)
+    , mDirCount(0)
 {
 
 }
@@ -171,4 +173,34 @@ bool DataCenter::ignoreCase()
 void DataCenter::setIgnoreCase(bool cs)
 {
     this->mIgnoreCase = cs;
+}
+
+quint64 DataCenter::fileCount()
+{
+    return mFileCount;
+}
+
+void DataCenter::setFileCount(quint64 cnt)
+{
+    this->mFileCount = cnt;
+}
+
+void DataCenter::addOneFile()
+{
+    this->mFileCount ++;
+}
+
+quint64 DataCenter::dirCount()
+{
+    return mDirCount;
+}
+
+void DataCenter::setDirCount(quint64 cnt)
+{
+    this->mDirCount = cnt;
+}
+
+void DataCenter::addOneDir()
+{
+    this->mDirCount ++;
 }

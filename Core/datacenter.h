@@ -54,6 +54,14 @@ public:
     bool ignoreCase();
     void setIgnoreCase(bool);
 
+    quint64 fileCount();
+    void setFileCount(quint64);
+    void addOneFile();
+
+    quint64 dirCount();
+    void setDirCount(quint64);
+    void addOneDir();
+
 signals:
 
 private:
@@ -82,6 +90,10 @@ private:
     int mSortOrder;
     //忽略大小写  默认 true
     bool mIgnoreCase;
+    // 扫描到的文件总数
+    quint64 mFileCount;
+    //扫描到的文件夹总数
+    quint64 mDirCount;
 
 };
 

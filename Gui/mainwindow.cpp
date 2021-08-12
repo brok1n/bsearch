@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "core.h"
 #include "copymovefiledialog.h"
+#include "resultlistitem.h"
 #include <QApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -21,6 +22,7 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QtNetwork>
+#include <QSize>
 
 
 const char checkUpdateUrl[] = "https://gitee.com/brok1n/bsearch/raw/master/Api/checkUpdate.json";
@@ -31,8 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , mWaitResultTimer(new QTimer())
     , mWaitScanDiskTimer(new QTimer())
+    , mTimeTimer(new QTimer())
     , mAboutDialog(nullptr)
     , reply(nullptr)
+    , mContextMenu(nullptr)
+    , mStatusMsgLabel(nullptr)
+    , mStatusTimeLabel(nullptr)
 {
     this->ui->setupUi(this);
 
@@ -41,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    this->ui->listWidget->setIconSize(QSize(24, 24));
     connect(this->ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onListWidgetItemClicked(QListWidgetItem*)));
 
+    // ------ 新建窗口 ------
     //如果窗口数量 > 0
     int controlPanelCount = Core::GetInstance()->controlPanelCount();
     if(controlPanelCount > 0)
@@ -61,11 +68,14 @@ MainWindow::MainWindow(QWidget *parent)
         mPanelId = QDateTime::currentDateTime().toMSecsSinceEpoch();
         Core::GetInstance()->addControlPanel(mPanelId);
     }
+    // ------ 新建窗口 ------
+
 
     connect(mWaitScanDiskTimer, SIGNAL(timeout()), this, SLOT(onScanDiskFinished()));
     mWaitScanDiskTimer->start(1000);
 
-    this->ui->statusbar->showMessage("正在扫描磁盘...");
+    showMsg("正在扫描磁盘...");
+//    this->ui->statusbar->showMessage("正在扫描磁盘...");
 
     QString desktopFileName = QApplication::desktopFileName();
     qDebug() << "desktopFileName:" << desktopFileName;
@@ -111,38 +121,65 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
-    QList<QString> testList;
-
-    testList.append("Brok1n");
-//    testList.append("brok1n");
-    testList.append("Jacklist");
-//    testList.append("Jacklist");
-    QString key = "brok1n";
-    if(testList.contains(key))
-    {
-        qDebug() << "contains " << key;
-    }
-    else
-    {
-        qDebug() << "not contains " << key;
-    }
-
-
-    // ----- 版本更新相关 -----
-
+    // ------ 版本更新相关 ------
 //#ifndef QT_NO_SSL
     connect(&qnam, &QNetworkAccessManager::sslErrors,
             this, &MainWindow::sslErrors);
 //#endif
 
-    // ----- 版本更新相关 -----
+    // ------ 版本更新相关 ------
 
 
-//    QString desktopFileName = QApplication::desktopFileName();
-//    qDebug() << "desktopFileName:" << desktopFileName;
+    // ------ 右键菜单 ------
+    mContextMenu = new QMenu( this );
+    QAction *openAction = new QAction(tr("打开文件"), this);
+    QAction *openFolder = new QAction(tr("打开所在目录"), this);
 
-//    ThreadPoolTest *test = new ThreadPoolTest;
-//    test->start();
+    QAction *copyToDesktop = new QAction(tr("复制到桌面"), this);
+    QAction *copyToFolder = new QAction(tr("复制到..."), this);
+    QAction *moveToFolder = new QAction(tr("移动到..."), this);
+
+    mContextMenu->addAction( openAction );
+    mContextMenu->addAction( openFolder );
+    mContextMenu->addSeparator();
+    mContextMenu->addAction( copyToDesktop );
+    mContextMenu->addAction( copyToFolder );
+    mContextMenu->addAction( moveToFolder );
+
+    connect( openAction, SIGNAL(triggered() ), this, SLOT( on_actionOpenFile_triggered()) );
+    connect( openFolder, SIGNAL(triggered() ), this, SLOT( on_actionOpenInFolder_triggered()) );
+    connect( copyToDesktop, SIGNAL(triggered() ), this, SLOT( on_actionCopyToDesktop_triggered()) );
+    connect( copyToFolder, SIGNAL(triggered() ), this, SLOT( on_actionCopyTo_triggered()) );
+    connect( moveToFolder, SIGNAL(triggered() ), this, SLOT( on_actionMoveTo_triggered()) );
+    // ------ 右键菜单 ------
+
+
+    // ------ 状态栏 ------
+    //   ---- 消息  ----
+    mStatusMsgLabel = new QLabel;
+    mStatusMsgLabel->setAlignment(Qt::AlignCenter);
+    mStatusMsgLabel->setMinimumSize(mStatusMsgLabel->sizeHint());
+    ui->statusbar->addWidget(mStatusMsgLabel, 1);
+    //   ---- 消息  ----
+    //   ---- 文件数  ----
+    mStatusFileCountLabel = new QLabel;
+    mStatusFileCountLabel->setAlignment(Qt::AlignCenter);
+    mStatusFileCountLabel->setMinimumSize(mStatusFileCountLabel->sizeHint());
+    ui->statusbar->addWidget(mStatusFileCountLabel);
+    //   ---- 文件数  ----
+    //   ---- 时间  ----
+    mStatusTimeLabel = new QLabel;
+    mStatusTimeLabel->setAlignment(Qt::AlignCenter);
+    mStatusTimeLabel->setMinimumSize(mStatusTimeLabel->sizeHint());
+    ui->statusbar->addWidget(mStatusTimeLabel);
+    connect(mTimeTimer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
+    mTimeTimer->start(1000);
+    timeUpdate();
+    //   ---- 时间  ----
+    // ------ 状态栏 ------
+
+
+//    mContextMenu->exec( QCursor::pos() );
 }
 
 MainWindow::~MainWindow()
@@ -180,7 +217,11 @@ void MainWindow::onScanDiskFinished()
     {
         disconnect(mWaitScanDiskTimer, SIGNAL(timeout()), this, SLOT(onScanDiskFinished()));
         mWaitScanDiskTimer->stop();
-        this->ui->statusbar->showMessage("磁盘扫描完毕!");
+        showMsg("磁盘扫描完毕!");
+
+        mStatusFileCountLabel->setText(QString("文件数：%1 文件夹数：%1").arg(DataCenter::GetInstance()->fileCount()).arg(DataCenter::GetInstance()->dirCount()));
+
+//        this->ui->statusbar->showMessage("磁盘扫描完毕!");
     }
 }
 
@@ -200,27 +241,39 @@ void MainWindow::flushResult()
 
     this->ui->listWidget->clear();
     int size = resultList->size();
-    size = size > 25 ? 25 : size;
+//    size = size > 25 ? 25 : size;
     for(int i = 0; i < size; i ++)
     {
         Node *node = resultList->at(i);
         QListWidgetItem *item=new QListWidgetItem(this->ui->listWidget);
         QString fullPath = node->fullPath();
-        item->setText(QString("%1 (%2)").arg(node->name).arg(Common::formatFileSize(node->fileSize())));
 
-        QFileInfo fileInfo(fullPath);
+//        item->setText(QString("%1 (%2)").arg(node->name).arg(Common::formatFileSize(node->fileSize())));
+
+//        QFileInfo fileInfo(fullPath);
         QFileIconProvider fileIcon;
-        QIcon icon = fileIcon.icon(fileInfo);
+        QIcon icon = fileIcon.icon(node->fileInfo());
 
 
         item->setIcon(icon);
         item->setData(Qt::UserRole, fullPath);
 
+//        QSize size = item->sizeHint();
+//        item->setSizeHint(QSize(size.width(), 88));
+
         this->ui->listWidget->addItem(item);
+
+        ResultListItem *itemView = new ResultListItem(node, ui->listWidget);
+
+//        itemView->setSizeIncrement(size.width(), 88);
+
+        this->ui->listWidget->setItemWidget(item, itemView);
+
 //        this->update();
         QApplication::processEvents();
     }
-    this-> ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
+    showMsg(QString("找到 %1 个结果.").arg(resultList->size()));
+//    this-> ui->statusbar->showMessage(QString("找到 %1 个结果.").arg(resultList->size()));
 
     this->update();
 
@@ -235,7 +288,8 @@ void MainWindow::startSearch()
     if(key.isEmpty())
     {
         qDebug() << "搜索关键字为空！不执行搜索。";
-        this->ui->statusbar->showMessage("搜索关键字为空！不执行搜索。");
+        showMsg("搜索关键字为空！不执行搜索。");
+//        this->ui->statusbar->showMessage("搜索关键字为空！不执行搜索。");
         return;
     }
 
@@ -245,17 +299,28 @@ void MainWindow::startSearch()
     if(this->ui->contentSearchCbox->isChecked())
     {
         qDebug() << "内容搜索，需要特殊处理，功能暂未实现。";
-        this->ui->statusbar->showMessage("内容搜索，需要特殊处理，功能暂未实现。");
+        showMsg("内容搜索，需要特殊处理，功能暂未实现。");
+//        this->ui->statusbar->showMessage("内容搜索，需要特殊处理，功能暂未实现。");
         this->ui->contentSearchCbox->setChecked(false);
         this->ui->actionTxtContentSearch->setChecked(false);
         return;
     }
+
+    showMsg("");
 
     Core::GetInstance()->search(key, fileType);
 //    Core::GetInstance()->search(key);
     disconnect(mWaitResultTimer, SIGNAL(timeout()), this, SLOT(onSearchFinished()));
     connect(mWaitResultTimer, SIGNAL(timeout()), this, SLOT(onSearchFinished()));
     mWaitResultTimer->start(1000);
+}
+
+void MainWindow::showMsg(QString msg)
+{
+    if(mStatusMsgLabel != nullptr)
+    {
+        mStatusMsgLabel->setText(msg);
+    }
 }
 
 void MainWindow::on_filterCBox_currentIndexChanged(int index)
@@ -845,4 +910,19 @@ void MainWindow::error(QNetworkReply::NetworkError)
     reply = qnam.get(QNetworkRequest(QUrl(checkUpdateBakUrl)));
     connect(reply, &QNetworkReply::finished, this, &MainWindow::httpFinished);
     connect(reply, &QIODevice::readyRead, this, &MainWindow::httpReadyRead);
+}
+
+void MainWindow::on_listWidget_customContextMenuRequested(const QPoint &pos)
+{
+    QListWidgetItem* curItem = ui->listWidget->itemAt( pos );
+       if( curItem == NULL )
+           return;
+    mContextMenu->exec( QCursor::pos() );
+}
+
+void MainWindow::timeUpdate()
+{
+    QDateTime current_time = QDateTime::currentDateTime();
+    QString timestr = current_time.toString( "yyyy年MM月dd日 hh:mm:ss"); //设置显示的格式
+    mStatusTimeLabel->setText(timestr); //设置label的文本内容为时间
 }

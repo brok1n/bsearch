@@ -200,11 +200,13 @@ void CopyMoveFileDialog::startProcess()
         input.close();
         out.close();
         QApplication::processEvents();
-        if(mIsMove)
+        //如果用户没有取消，并且是移动，就删除源文件
+        if(!mCancel && mIsMove)
         {
             QFile currentFile(mCurrentFilePath);
             currentFile.remove();
         }
+        //如果用户取消，就删除复制产生的目标文件。
         if(mCancel)
         {
             QFile targetFile(targetFilePath);

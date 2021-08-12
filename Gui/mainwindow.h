@@ -11,6 +11,8 @@
 #include <QUrl>
 #include <QNetworkReply>
 #include <QSslError>
+#include <QMenu>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -114,21 +116,32 @@ private slots:
     void sslErrors(QNetworkReply *, const QList<QSslError> &errors);
     void error(QNetworkReply::NetworkError);
 
+    void on_listWidget_customContextMenuRequested(const QPoint &pos);
+
+    void timeUpdate();
+
 public:
 
     void flushResult();
 
     void startSearch();
 
+    void showMsg(QString);
+
 private:
     Ui::MainWindow *ui;
     QTimer *mWaitResultTimer;
     QTimer *mWaitScanDiskTimer;
+    QTimer *mTimeTimer;
     qint64 mPanelId;
     QSize mDefaultIconSize;
     AboutDialog *mAboutDialog;
     QNetworkAccessManager qnam;
     QNetworkReply *reply;
+    QMenu *mContextMenu;
+    QLabel *mStatusMsgLabel;
+    QLabel *mStatusTimeLabel;
+    QLabel *mStatusFileCountLabel;
 
 };
 #endif // MAINWINDOW_H

@@ -25,3 +25,31 @@ QString Common::formatFileSize(qint64 size)
     }
     return QString("%1字节").arg(size);
 }
+
+QString Common::fileTypeToName(FILE_TYPE tp)
+{
+    switch (tp) {
+    case FILE_TYPE::FILE_MUSIC:
+        return FILE_MUSIC_NAME;
+        break;
+    case FILE_TYPE::FILE_VIDEO:
+        return FILE_VIDEO_NAME;
+        break;
+    case FILE_TYPE::FILE_IMAGE:
+        return FILE_IMAGE_NAME;
+        break;
+    case FILE_TYPE::FILE_DOCUMENT:
+        return FILE_DOCUMENT_NAME;
+        break;
+    case FILE_TYPE::FILE_COMPRESS:
+        return FILE_COMPRESS_NAME;
+        break;
+    case FILE_TYPE::FILE_EXECUTABLE:
+        return FILE_EXECUTABLE_NAME;
+        break;
+    case FILE_TYPE::FILE_DIR:
+        return FILE_DIR_NAME;
+        break;
+    }
+    return FILE_OTHER_NAME;
+}

@@ -54,21 +54,21 @@ void PartitionIndexThread::run()
         //从第二个元素开始遍历，因为第一个元素是盘符
         for(int i = 1; i < homePathList.size(); i ++)
         {
-            Node *node = Node::create(homePathList.at(i), lastNode, true);
+            Node *node = Node::create(homePathList.at(i), lastNode);
             lastNode = node;
         }
 
         //3D目录
         QString home3DPath = QString(homePath).append('/').append("3D Objects");
         QFileInfo home3DInfo(home3DPath);
-        Node *home3DNode = Node::create(home3DInfo.fileName(), lastNode, true);
+        Node *home3DNode = Node::create(home3DInfo.fileName(), lastNode);
         PathIndexRunnable *pathThread = new PathIndexRunnable(home3DInfo, home3DNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
         //Videos目录
         QString homeVideosPath = QString(homePath).append('/').append("Videos");
         QFileInfo homeVideosInfo(homeVideosPath);
-        Node *homeVideosNode = Node::create(homeVideosInfo.fileName(), lastNode, true);
+        Node *homeVideosNode = Node::create(homeVideosInfo.fileName(), lastNode);
         pathThread = new PathIndexRunnable(homeVideosInfo, homeVideosNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
@@ -76,35 +76,35 @@ void PartitionIndexThread::run()
         //Pictures目录
         QString homePicturesPath = QString(homePath).append('/').append("Pictures");
         QFileInfo homePicturesInfo(homePicturesPath);
-        Node *homePicturesNode = Node::create(homePicturesInfo.fileName(), lastNode, true);
+        Node *homePicturesNode = Node::create(homePicturesInfo.fileName(), lastNode);
         pathThread = new PathIndexRunnable(homePicturesInfo, homePicturesNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
         //Documents目录
         QString homeDocumentsPath = QString(homePath).append('/').append("Documents");
         QFileInfo homeDocumentsInfo(homeDocumentsPath);
-        Node *homeDocumentsNode = Node::create(homeDocumentsInfo.fileName(), lastNode, true);
+        Node *homeDocumentsNode = Node::create(homeDocumentsInfo.fileName(), lastNode);
         pathThread = new PathIndexRunnable(homeDocumentsInfo, homeDocumentsNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
         //Downloads目录
         QString homeDownloadsPath = QString(homePath).append('/').append("Downloads");
         QFileInfo homeDownloadsInfo(homeDownloadsPath);
-        Node *homeDownloadsNode = Node::create(homeDownloadsInfo.fileName(), lastNode, true);
+        Node *homeDownloadsNode = Node::create(homeDownloadsInfo.fileName(), lastNode);
         pathThread = new PathIndexRunnable(homeDownloadsInfo, homeDownloadsNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
         //Music目录
         QString homeMusicPath = QString(homePath).append('/').append("Music");
         QFileInfo homeMusicInfo(homeMusicPath);
-        Node *homeMusicNode = Node::create(homeMusicInfo.fileName(), lastNode, true);
+        Node *homeMusicNode = Node::create(homeMusicInfo.fileName(), lastNode);
         pathThread = new PathIndexRunnable(homeMusicInfo, homeMusicNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
         //Desktop目录
         QString homeDesktopPath = QString(homePath).append('/').append("Desktop");
         QFileInfo homeDesktopInfo(homeDesktopPath);
-        Node *homeDesktopNode = Node::create(homeDesktopInfo.fileName(), lastNode, true);
+        Node *homeDesktopNode = Node::create(homeDesktopInfo.fileName(), lastNode);
         pathThread = new PathIndexRunnable(homeDesktopInfo, homeDesktopNode, 1, mThreadPool);
         mThreadPool->start(pathThread);
 
@@ -125,7 +125,6 @@ void PartitionIndexThread::run()
             node->setFileSize(fileInfo.size());
             if(fileInfo.isDir())
             {
-                node->isDir = true;
     //            if(node->name.startsWith("$") || node->name.startsWith("."))
     //            {
     //                continue;

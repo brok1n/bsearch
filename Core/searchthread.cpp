@@ -7,6 +7,7 @@ SearchThread::SearchThread(Node *node, QString key, int fileType)
     , mRunning(false)
     , mFileType(fileType)
 {
+    //是否忽略大小写处理
     if(DataCenter::GetInstance()->ignoreCase())
     {
         mCaseSensitivity = Qt::CaseInsensitive;

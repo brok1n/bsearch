@@ -17,6 +17,10 @@ public:
 
     void stop();
 
+    void sumFileAndDirCount();
+
+    void eachNode(Node*);
+
 private:
     QList<PartitionIndexThread*> mPartitionThreadList;
 };
